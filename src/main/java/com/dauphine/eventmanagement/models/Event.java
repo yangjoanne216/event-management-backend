@@ -43,10 +43,12 @@ public class Event {
   private TypeLocation typeLocation;
 
   @ManyToOne
-  @JoinColumn(name = "location", nullable = false)
+  @JoinColumn(name = "id_location", nullable = false)
   private Location location;
 
   private String image;
+
+  private double note;
 
   public UUID getId_event() {
     return id_event;
@@ -70,22 +72,6 @@ public class Event {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  public LocalDateTime getStart() {
-    return start_time;
-  }
-
-  public void setStart(LocalDateTime start) {
-    this.start_time = start;
-  }
-
-  public LocalDateTime getEnd() {
-    return end_time;
-  }
-
-  public void setEnd(LocalDateTime end) {
-    this.end_time = end;
   }
 
   public TypeEvent getTypeEvent() {
@@ -120,4 +106,27 @@ public class Event {
     this.image = image;
   }
 
+  public LocalDateTime getStart_time() {
+    return start_time;
+  }
+
+  public void setStart_time(LocalDateTime start_time) {
+    this.start_time = start_time;
+  }
+
+  public LocalDateTime getEnd_time() {
+    return end_time;
+  }
+
+  public void setEnd_time(LocalDateTime end_time) {
+    this.end_time = end_time;
+  }
+
+  public double getNote() {
+    return note;
+  }
+
+  public void setNote(double note) {
+    this.note = note;
+  }
 }
