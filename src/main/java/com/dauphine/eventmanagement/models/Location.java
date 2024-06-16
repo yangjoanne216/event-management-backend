@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 
 
 @Entity
@@ -14,17 +15,17 @@ public class Location {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id_city;
+  private UUID id_city;
 
   @Column(nullable = false, unique = true)
   private String name;
 
 
-  public Long getId_city() {
+  public UUID getId_city() {
     return id_city;
   }
 
-  public void setId_city(Long id_city) {
+  public void setId_city(UUID id_city) {
     this.id_city = id_city;
   }
 

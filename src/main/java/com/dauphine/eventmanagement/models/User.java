@@ -6,15 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id_user;
+  private UUID id_user;
 
   @Column(nullable = false, unique = true)
   private String email;
@@ -32,11 +33,11 @@ public class User {
   private String avatar;
 
 
-  public Long getId_user() {
+  public UUID getId_user() {
     return id_user;
   }
 
-  public void setId_user(Long id_user) {
+  public void setId_user(UUID id_user) {
     this.id_user = id_user;
   }
 

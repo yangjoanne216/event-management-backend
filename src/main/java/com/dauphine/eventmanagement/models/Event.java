@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "event")
@@ -18,7 +19,7 @@ public class Event {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id_event;
+  private UUID id_event;
 
   @Column(nullable = false)
   private String title;
@@ -27,10 +28,10 @@ public class Event {
   private String description;
 
   @Column(nullable = false)
-  private LocalDateTime start;
+  private LocalDateTime start_time;
 
   @Column(nullable = false)
-  private LocalDateTime end;
+  private LocalDateTime end_time;
 
   @ManyToOne
   @JoinColumn(name = "id_type_event", nullable = false)
@@ -47,11 +48,11 @@ public class Event {
 
   private String image;
 
-  public Long getId_event() {
+  public UUID getId_event() {
     return id_event;
   }
 
-  public void setId_event(Long id_event) {
+  public void setId_event(UUID id_event) {
     this.id_event = id_event;
   }
 
@@ -72,19 +73,19 @@ public class Event {
   }
 
   public LocalDateTime getStart() {
-    return start;
+    return start_time;
   }
 
   public void setStart(LocalDateTime start) {
-    this.start = start;
+    this.start_time = start;
   }
 
   public LocalDateTime getEnd() {
-    return end;
+    return end_time;
   }
 
   public void setEnd(LocalDateTime end) {
-    this.end = end;
+    this.end_time = end;
   }
 
   public TypeEvent getTypeEvent() {

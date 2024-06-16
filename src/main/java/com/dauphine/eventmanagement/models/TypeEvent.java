@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table(name = "type_event")
@@ -13,17 +14,17 @@ public class TypeEvent {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id_type;
+  private UUID id_type;
 
   @Column(nullable = false, unique = true)
   private String name;
 
 
-  public Long getId_type() {
+  public UUID getId_type() {
     return id_type;
   }
 
-  public void setId_type(Long id_type) {
+  public void setId_type(UUID id_type) {
     this.id_type = id_type;
   }
 
