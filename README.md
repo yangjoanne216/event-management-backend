@@ -16,17 +16,10 @@
 
 | Attrributs           | Values                                                                                 |
 |----------------|----------------------------------------------------------------------------------------|
-| **
-Name**       | event management 2                                                                     |
-| **
-Host**       | lucky.db.elephantsql.com                                                               |
-| **
-Port**       | 5432                                                                                   |
-| **
-User**       | nizybsdl                                                                               |
-| **
-Password**   | 01N0MXhVJXeTZjtRaEWj0yOaDSZ2ZLWg                                                       |
-| **
-Database**   | nizybsdl                                                                               |
-| **
-URL**        | postgres://nizybsdl:01N0MXhVJXeTZjtRaEWj0yOaDSZ2ZLWg@lucky.db.elephantsql.com/nizybsdl |
+Name      | event management 2                                                                     |
+Host       | lucky.db.elephantsql.com                                                               |
+Port       | 5432                                                                                   |
+User       | nizybsdl                                                                               |
+Password   | 01N0MXhVJXeTZjtRaEWj0yOaDSZ2ZLWg                                                       |
+Database   | nizybsdl                                                                               |
+URL        | jdbc:postgresql://lucky.db.elephantsql.com:5432/nizybsdl |
