@@ -2,8 +2,8 @@ CREATE TYPE TYPELOCATION AS ENUM ('ONLINE', 'ONSITE', 'HYBRIDE');
 -- Drop tables if they exist
 DROP TABLE IF EXISTS participation;
 DROP TABLE IF EXISTS feedback;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS event;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS type_event;
 DROP TABLE IF EXISTS location;
 
@@ -42,7 +42,8 @@ CREATE TABLE event
     id_type_event UUID         NOT NULL REFERENCES type_event (id_type),
     type_location TYPELOCATION NOT NULL, -- Assuming TYPELOCATION is a predefined enum
     image         VARCHAR(255),          -- Assuming storing URLs for images
-    id_location   UUID REFERENCES location (id_city)
+    id_location   UUID REFERENCES location (id_city),
+    note          numeric(10, 2)
 );
 
 
