@@ -12,17 +12,17 @@ import java.util.UUID;
 public class Participation {
 
   @Id
-  private UUID id_event;
+  private UUID idEvent;
 
   @Id
-  private UUID id_user;
+  private UUID idUser;
 
   @ManyToOne
-  @JoinColumn(name = "id_event", referencedColumnName = "id_event", insertable = false, updatable = false)
+  @JoinColumn(name = "idEvent", referencedColumnName = "idEvent", insertable = false, updatable = false)
   private Event event;
 
   @ManyToOne
-  @JoinColumn(name = "id_user", referencedColumnName = "id_user", insertable = false, updatable = false)
+  @JoinColumn(name = "idUser", referencedColumnName = "idUser", insertable = false, updatable = false)
   private User user;
 
 }

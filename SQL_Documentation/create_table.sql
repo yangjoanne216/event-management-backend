@@ -1,4 +1,3 @@
-CREATE TYPE TYPELOCATION AS ENUM ('ONLINE', 'ONSITE', 'HYBRIDE');
 -- Drop tables if they exist
 DROP TABLE IF EXISTS participation;
 DROP TABLE IF EXISTS feedback;
@@ -6,6 +5,9 @@ DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS type_event;
 DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS typeEvent;
+DROP TYPE if exists TYPELOCATION;
+CREATE TYPE TYPELOCATION AS ENUM ('ONLINE', 'ONSITE', 'HYBRID');
 
 CREATE TABLE type_event
 (
@@ -43,7 +45,7 @@ CREATE TABLE event
     type_location TYPELOCATION NOT NULL, -- Assuming TYPELOCATION is a predefined enum
     image         VARCHAR(255),          -- Assuming storing URLs for images
     id_location   UUID REFERENCES location (id_city),
-    note          numeric(10, 2)
+    score         numeric(10, 2)
 );
 
 
@@ -59,12 +61,45 @@ CREATE TABLE participation
 CREATE TABLE feedback
 (
     id_feedback UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    id_event    UUID      NOT NULL,
-    id_user     UUID      NOT NULL,
-    date        TIMESTAMP NOT NULL,
+    id_event    UUID                       NOT NULL,
+    id_user     UUID                       NOT NULL,
+    date        TIMESTAMP                  NOT NULL,
     content     TEXT,
-    note        INTEGER CHECK (note <= 5),
+    score       INTEGER CHECK (score <= 5) NOT NULL,
     FOREIGN KEY (id_event) REFERENCES event (id_event),
     FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
 
+/*Create trigger for calculate average score based on feedback */
+CREATE OR REPLACE FUNCTION update_event_score()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    UPDATE event
+    SET score = (SELECT COALESCE(AVG(score), 0)
+                 FROM feedback
+                 WHERE id_event = NEW.id_event)
+    WHERE id_event = NEW.id_event;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_feedback_insert
+    AFTER INSERT
+    ON feedback
+    FOR EACH ROW
+EXECUTE FUNCTION update_event_score();
+
+CREATE TRIGGER trg_feedback_update
+    AFTER UPDATE
+    ON feedback
+    FOR EACH ROW
+EXECUTE FUNCTION update_event_score();
+
+CREATE TRIGGER trg_feedback_delete
+    AFTER DELETE
+    ON feedback
+    FOR EACH ROW
+EXECUTE FUNCTION update_event_score()
+
+select * from event

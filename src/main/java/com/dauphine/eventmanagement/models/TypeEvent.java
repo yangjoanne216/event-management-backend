@@ -9,23 +9,23 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "type_event")
+@Table(name = "typeEvent")
 public class TypeEvent {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID id_type;
+  private UUID idType;
 
   @Column(nullable = false, unique = true)
   private String name;
 
 
-  public UUID getId_type() {
-    return id_type;
+  public UUID getIdType() {
+    return idType;
   }
 
-  public void setId_type(UUID id_type) {
-    this.id_type = id_type;
+  public void setIdType(UUID idType) {
+    this.idType = idType;
   }
 
   public String getName() {

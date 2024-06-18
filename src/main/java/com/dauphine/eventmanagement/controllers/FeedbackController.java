@@ -39,45 +39,45 @@ public class FeedbackController {
   public Feedback createFeedback(
       @Parameter(description = "id of event, content of feedbocak, note for this event") @RequestBody FeedbackRequest feedbackRequest) {
     //Todo get current user id
-    UUID id_user = null;
-    Feedback createdFeedback = feedbackService.createFeedback(id_user,
-        feedbackRequest.getId_event(), feedbackRequest.getContent(), feedbackRequest.getNote());
+    UUID idUser = null;
+    Feedback createdFeedback = feedbackService.createFeedback(idUser,
+        feedbackRequest.getIdEvent(), feedbackRequest.getContent(), feedbackRequest.getScore());
     return createdFeedback;
   }
 
-  @PutMapping("/{id_feedback}")
+  @PutMapping("/{idFeedback}")
   @Operation(
       summary = "Modify existing feedback",
       description = "Updates the feedback submitted by a user for an event."
   )
-  public Feedback modifyFeedback(@PathVariable UUID id_feedback,
+  public Feedback modifyFeedback(@PathVariable UUID idFeedback,
       @Parameter(description = "id of event, content of feedbocak, note for this event") @RequestBody FeedbackRequest feedbackRequest) {
     //Todo get current user id
-    UUID id_user = null;
-    Feedback updatedFeedback = feedbackService.modifyFeedback(id_user,
-        feedbackRequest.getId_event(), feedbackRequest.getContent(), feedbackRequest.getNote());
+    UUID idUser = null;
+    Feedback updatedFeedback = feedbackService.modifyFeedback(idUser,
+        feedbackRequest.getIdEvent(), feedbackRequest.getContent(), feedbackRequest.getScore());
     return updatedFeedback;
   }
 
-  @DeleteMapping("/{id_feedback}")
+  @DeleteMapping("/{idFeedback}")
   @Operation(
       summary = "Delete feedback",
       description = "Deletes a specific feedback entry for an event."
   )
   public Boolean deleteFeedback(
-      @Parameter(description = "id of feedback") @PathVariable UUID id_feedback) {
-    feedbackService.deleteFeedback(id_feedback);
+      @Parameter(description = "id of feedback") @PathVariable UUID idFeedback) {
+    feedbackService.deleteFeedback(idFeedback);
     return true;
   }
 
-  @GetMapping("/event/{id_event}")
+  @GetMapping("/event/{idEvent}")
   @Operation(
       summary = "Get all feedback for an event",
       description = "Retrieves all feedback entries submitted for a specific event."
   )
   public List<Feedback> getAllFeedbackOfAnEvent(
-      @Parameter(description = "id of event") @PathVariable UUID id_event) {
-    List<Feedback> feedbacks = feedbackService.getAllFeedbackOfAnEvent(id_event);
+      @Parameter(description = "id of event") @PathVariable UUID idEvent) {
+    List<Feedback> feedbacks = feedbackService.getAllFeedbackOfAnEvent(idEvent);
     return feedbacks;
   }
 }

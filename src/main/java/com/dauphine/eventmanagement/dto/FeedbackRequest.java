@@ -4,17 +4,10 @@ import java.util.UUID;
 
 public class FeedbackRequest {
 
-  private UUID id_event;
+  private UUID idEvent;
   private String content;
-  private Integer note;
+  private Integer score;
 
-  public UUID getId_event() {
-    return id_event;
-  }
-
-  public void setId_event(UUID id_event) {
-    this.id_event = id_event;
-  }
 
   public String getContent() {
     return content;
@@ -24,11 +17,19 @@ public class FeedbackRequest {
     this.content = content;
   }
 
-  public Integer getNote() {
-    return note;
+  public Integer getScore() {
+    return score;
   }
 
-  public void setNote(Integer note) {
-    this.note = note;
+  public void setScore(Integer score) {
+    this.score = score;
+  }
+
+  public UUID getIdEvent() {
+    return idEvent;
+  }
+
+  public void setIdEvent(UUID idEvent) {
+    this.idEvent = idEvent;
   }
 }

@@ -22,6 +22,7 @@ public class LocationController {
     this.locationService = locationService;
   }
 
+  @RequestMapping
   @Operation(
       summary = "Retrieve all locations",
       description = "Fetches a list of all locations where events can be held."

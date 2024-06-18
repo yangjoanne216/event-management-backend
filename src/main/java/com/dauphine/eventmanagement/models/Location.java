@@ -15,18 +15,18 @@ public class Location {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID id_city;
+  private UUID idCity;
 
   @Column(nullable = false, unique = true)
   private String name;
 
 
-  public UUID getId_city() {
-    return id_city;
+  public UUID getIdCity() {
+    return idCity;
   }
 
-  public void setId_city(UUID id_city) {
-    this.id_city = id_city;
+  public void setIdCity(UUID idCity) {
+    this.idCity = idCity;
   }
 
   public String getName() {

@@ -20,11 +20,11 @@ public class Feedback {
   private UUID id;
 
   @ManyToOne
-  @JoinColumn(name = "id_event", nullable = false)
+  @JoinColumn(name = "idEvent", nullable = false)
   private Event event;
 
   @ManyToOne
-  @JoinColumn(name = "id_user", nullable = false)
+  @JoinColumn(name = "idUser", nullable = false)
   private User user;
 
   @Column(nullable = false)
@@ -34,7 +34,7 @@ public class Feedback {
   private String content;
 
   @Column(nullable = false)
-  private Integer note; // Should validate that note is <= 5
+  private Integer score; // Should validate that score is <= 5
 
 
   public UUID getId() {
@@ -77,11 +77,11 @@ public class Feedback {
     this.content = content;
   }
 
-  public Integer getNote() {
-    return note;
+  public Integer getScore() {
+    return score;
   }
 
-  public void setNote(Integer note) {
-    this.note = note;
+  public void setScore(Integer note) {
+    this.score = note;
   }
 }

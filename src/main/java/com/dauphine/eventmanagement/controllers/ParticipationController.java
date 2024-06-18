@@ -56,14 +56,14 @@ public class ParticipationController {
     return ResponseEntity.ok("Participation cancelled successfully.");
   }
 
-  @GetMapping("/participants/{id_event}")
+  @GetMapping("/participants/{idEvent}")
   @Operation(
       summary = "Get all participants of an event",
       description = "Retrieves a list of all participants registered for the specified event."
   )
   public ResponseEntity<List<User>> getParticipants(
-      @Parameter(description = "id of event") @PathVariable UUID id_event) {
-    List<User> participants = participationService.getParticipants(id_event);
+      @Parameter(description = "id of event") @PathVariable UUID idEvent) {
+    List<User> participants = participationService.getParticipants(idEvent);
     return ResponseEntity.ok(participants);
   }
 }

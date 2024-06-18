@@ -34,6 +34,7 @@ public class EventController {
     this.eventService = eventServiceImpl;
   }
 
+  @GetMapping
   @Operation(
       summary = "Get all events",
       description = "Retrieves a list of all events or filtered by title if provided."
@@ -71,7 +72,7 @@ public class EventController {
   )
   public List<Event> getAllMyEvents() {
     //Todo: get current user id et try to use particpationService to get all the event of the user participates in
-    UUID id_organizer = null;
+    UUID idOrganizer = null;
     return null;
   }
 
@@ -97,23 +98,24 @@ public class EventController {
   }
 
 
-  @GetMapping("/{id}")
+  @GetMapping("/{idEvent}")
   @Operation(
       summary = "Get an event by its ID",
       description = "Fetches a single event by its unique identifier."
   )
-  public Event getEventByID(@Parameter(description = "id of event") @PathVariable UUID id_event) {
-    return eventService.findEventById(id_event);
+  public Event getEventByID(@Parameter(description = "id of event") @PathVariable UUID idEvent) {
+    return eventService.findEventById(idEvent);
   }
 
-  @GetMapping("/type/{id_type_event}")
+  //Todo : change the url : /v1/events/type/{idTypeEvent} to /v1/types/{idTypeEvent}/events
+  @GetMapping("/type/{idTypeEvent}")
   @Operation(
       summary = "Get events by type ID",
       description = "Fetches all events that match a particular type ID."
   )
   public List<Event> getEventsByTypeId(
-      @Parameter(description = "id of event's type") @PathVariable UUID id_type_event) {
-    return eventService.findEventsByTypeId(id_type_event);
+      @Parameter(description = "id of event's type") @PathVariable UUID idTypeEvent) {
+    return eventService.findEventsByTypeId(idTypeEvent);
   }
 
   @GetMapping("/date")
@@ -123,19 +125,19 @@ public class EventController {
   )
 
   public List<Event> getEventsByDateRange(
-      @Parameter(description = "Start time of search") @RequestParam LocalDateTime search_start,
-      @Parameter(description = "End time of search") @RequestParam LocalDateTime search_end) {
-    return eventService.findEventsByDateRange(search_start, search_end);
+      @Parameter(description = "Start time of search") @RequestParam LocalDateTime searchStart,
+      @Parameter(description = "End time of search") @RequestParam LocalDateTime searchEnd) {
+    return eventService.findEventsByDateRange(searchStart, searchEnd);
   }
 
-  @GetMapping("/location/{id_city}")
+  @GetMapping("/location/{idCity}")
   @Operation(
       summary = "Get events by location ID",
       description = "Fetches all events associated with a specific location ID."
   )
   public List<Event> getEventsByLocationId(
-      @Parameter(description = "id of city") @PathVariable UUID id_city) {
-    return eventService.findEventsByLocationId(id_city);
+      @Parameter(description = "id of city") @PathVariable UUID idCity) {
+    return eventService.findEventsByLocationId(idCity);
   }
 
 
@@ -146,64 +148,66 @@ public class EventController {
   )
   public Event createMyEvent(
       @Parameter(description = "Title,description,start time,end time, id of event,type of Location, Url for Image, id of city(location)") @RequestBody EventRequest eventRequest) {
-    /*Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-     UUID id_organizer = auth.getId(); */
-    UUID id_organizer = null;
+    /*//Todo:Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+     UUID idOrganizer = auth.getId(); */
+    //assumer yang yang is organizer
+    UUID idOrganizer = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
     return eventService.createEvent(eventRequest.getTitle(),
         eventRequest.getDescription(),
-        eventRequest.getStart_time(),
-        eventRequest.getEnd_time(),
+        eventRequest.getStartTime(),
+        eventRequest.getEndTime(),
         eventRequest.getTypeEventId(),
         eventRequest.getTypeLocation(),
         eventRequest.getImage(),
         eventRequest.getLocationId(),
-        id_organizer);
+        idOrganizer);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/{idEvent}")
   @Operation(
       summary = "Update an existing event",
       description = "Updates an event identified by its ID with new details."
   )
-  public Event updateEventId(@Parameter(description = "id of event") @PathVariable UUID id_event,
+  public Event updateEventId(@Parameter(description = "id of event") @PathVariable UUID idEvent,
       @Parameter(description = "Title,description,start time,end time, id of event,type of Location, Url for Image, id of city(location)") @RequestBody EventRequest eventRequest) {
-    return eventService.updateEvent(id_event,
+    return eventService.updateEvent(idEvent,
         eventRequest.getTitle(),
         eventRequest.getDescription(),
-        eventRequest.getStart_time(),
-        eventRequest.getEnd_time(),
+        eventRequest.getStartTime(),
+        eventRequest.getEndTime(),
         eventRequest.getTypeEventId(),
         eventRequest.getTypeLocation(),
         eventRequest.getImage(),
         eventRequest.getLocationId());
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{idEvent}")
   @Operation(
       summary = "Delete an event",
       description = "Deletes an event based on its ID,but only the event witch is organised bu current user can be deleted"
   )
-  public void deleteMyEvent(@Parameter(description = "id of event") @PathVariable UUID id_event) {
+  public void deleteMyEvent(@Parameter(description = "id of event") @PathVariable UUID idEvent) {
     //Todo throw out exception when this event is not the current user organises
-    eventService.deleteEvent(id_event);
+    eventService.deleteEvent(idEvent);
   }
 
-  @GetMapping("/sortedByStartDate")
+  @GetMapping("/sortedByStartTime")
   @Operation(
-      summary = "Order events by start date",
-      description = "Fetches all events ordered by their start dates."
+      summary = "Order events by start time",
+      description = "Fetches all events ordered by their start times."
   )
-  public List<Event> orderEventsByStartDate() {
-    return eventService.findAllEventsOrderedByStartDate();
+  public List<Event> orderEventsByStartTime() {
+    return eventService.findAllEventsOrderedByStartTime();
   }
 
-  @GetMapping("/sortedByNote")
+
+  @GetMapping("/sortedByScore")
   @Operation(
       summary = "Order events by moyen note of event",
       description = "Fetches all events ordered by their moyen note."
   )
-  public List<Event> orderEventsByNote() {
-    return eventService.findAllEventsOrderedByNote();
+  public List<Event> orderEventsByScore() {
+    return eventService.findAllEventsOrderedByScore();
   }
 
 }

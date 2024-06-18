@@ -32,10 +32,11 @@ public interface EventService {
 
   public List<Event> findEventsByDateRange(LocalDateTime start, LocalDateTime end);
 
-  public List<Event> findAllEventsOrderedByStartDate();
-
-  public List<Event> findAllEventsOrderedByNote();
+  public List<Event> findAllEventsOrderedByScore();
 
   public List<Event> findEventsByLocationId(UUID id_city);
 
+  List<Event> findEventsByType(UUID id_type_event);
+
+  List<Event> findAllEventsOrderedByStartTime();
 }

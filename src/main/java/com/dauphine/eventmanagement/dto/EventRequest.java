@@ -7,8 +7,8 @@ public class EventRequest {
 
   private String title;
   private String description;
-  private LocalDateTime start_time;
-  private LocalDateTime end_time;
+  private LocalDateTime startTime;
+  private LocalDateTime endTime;
   private UUID typeEventId;
   private String typeLocation;
   private String image;
@@ -30,20 +30,20 @@ public class EventRequest {
     this.description = description;
   }
 
-  public LocalDateTime getStart_time() {
-    return start_time;
+  public LocalDateTime getStartTime() {
+    return startTime;
   }
 
-  public void setStart_time(LocalDateTime start_time) {
-    this.start_time = start_time;
+  public void setStartTime(LocalDateTime startTime) {
+    this.startTime = startTime;
   }
 
-  public LocalDateTime getEnd_time() {
-    return end_time;
+  public LocalDateTime getEndTime() {
+    return endTime;
   }
 
-  public void setEnd_time(LocalDateTime end_time) {
-    this.end_time = end_time;
+  public void setEndTime(LocalDateTime endTime) {
+    this.endTime = endTime;
   }
 
   public UUID getTypeEventId() {

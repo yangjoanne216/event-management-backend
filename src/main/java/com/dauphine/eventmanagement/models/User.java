@@ -15,7 +15,7 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID id_user;
+  private UUID idUser;
 
   @Column(nullable = false, unique = true)
   private String email;
@@ -33,12 +33,12 @@ public class User {
   private String avatar;
 
 
-  public UUID getId_user() {
-    return id_user;
+  public UUID getIdUser() {
+    return idUser;
   }
 
-  public void setId_user(UUID id_user) {
-    this.id_user = id_user;
+  public void setIdUser(UUID idUser) {
+    this.idUser = idUser;
   }
 
   public String getEmail() {

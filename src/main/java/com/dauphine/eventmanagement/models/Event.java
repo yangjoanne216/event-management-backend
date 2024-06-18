@@ -19,7 +19,7 @@ public class Event {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID id_event;
+  private UUID idEvent;
 
   @Column(nullable = false)
   private String title;
@@ -28,13 +28,13 @@ public class Event {
   private String description;
 
   @Column(nullable = false)
-  private LocalDateTime start_time;
+  private LocalDateTime startTime;
 
   @Column(nullable = false)
-  private LocalDateTime end_time;
+  private LocalDateTime endTime;
 
   @ManyToOne
-  @JoinColumn(name = "id_type_event", nullable = false)
+  @JoinColumn(name = "idTypeEvent", nullable = false)
   private TypeEvent typeEvent;
 
   //online/onsite/hybride
@@ -43,19 +43,23 @@ public class Event {
   private TypeLocation typeLocation;
 
   @ManyToOne
-  @JoinColumn(name = "id_location", nullable = false)
+  @JoinColumn(name = "idLocation", nullable = false)
   private Location location;
+
+  @ManyToOne
+  @JoinColumn(name = "idOrganizer", nullable = false)
+  private User organizer;
 
   private String image;
 
-  private double note;
+  private Double score;
 
-  public UUID getId_event() {
-    return id_event;
+  public UUID getIdEvent() {
+    return idEvent;
   }
 
-  public void setId_event(UUID id_event) {
-    this.id_event = id_event;
+  public void setIdEvent(UUID idEvent) {
+    this.idEvent = idEvent;
   }
 
   public String getTitle() {
@@ -106,27 +110,35 @@ public class Event {
     this.image = image;
   }
 
-  public LocalDateTime getStart_time() {
-    return start_time;
+  public LocalDateTime getStartTime() {
+    return startTime;
   }
 
-  public void setStart_time(LocalDateTime start_time) {
-    this.start_time = start_time;
+  public void setStartTime(LocalDateTime startTime) {
+    this.startTime = startTime;
   }
 
-  public LocalDateTime getEnd_time() {
-    return end_time;
+  public LocalDateTime getEndTime() {
+    return endTime;
   }
 
-  public void setEnd_time(LocalDateTime end_time) {
-    this.end_time = end_time;
+  public void setEndTime(LocalDateTime endTime) {
+    this.endTime = endTime;
   }
 
-  public double getNote() {
-    return note;
+  public double getScore() {
+    return score != null ? score : 0.0;
   }
 
-  public void setNote(double note) {
-    this.note = note;
+  public void setScore(double note) {
+    this.score = note;
+  }
+
+  public User getOrganizer() {
+    return organizer;
+  }
+
+  public void setOrganizer(User organizer) {
+    this.organizer = organizer;
   }
 }
