@@ -1,10 +1,10 @@
 package com.dauphine.eventmanagement.controllers;
 
 import com.dauphine.eventmanagement.dto.FeedbackRequest;
+import com.dauphine.eventmanagement.dto.FeedbackUpdateRequest;
 import com.dauphine.eventmanagement.models.Feedback;
 import com.dauphine.eventmanagement.services.FeedbackService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
@@ -18,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/feedbacks")
-@Tag(
-    name = "Feedback API",
-    description = "Feedback endPoints"
-)
+@RequestMapping("/v1/feedback")
+@Tag(name = "Feedback API", description = "Feedback endpoints for managing event feedbacks")
 public class FeedbackController {
 
   private final FeedbackService feedbackService;
@@ -32,52 +29,40 @@ public class FeedbackController {
   }
 
   @PostMapping
-  @Operation(
-      summary = "Create feedback for an event",
-      description = "Submits feedback for an event by current user."
-  )
+  @Operation(summary = "Create feedback", description = "Submits feedback for an event by a user.")
   public Feedback createFeedback(
-      @Parameter(description = "id of event, content of feedbocak, note for this event") @RequestBody FeedbackRequest feedbackRequest) {
-    //Todo get current user id
-    UUID idUser = null;
-    Feedback createdFeedback = feedbackService.createFeedback(idUser,
-        feedbackRequest.getIdEvent(), feedbackRequest.getContent(), feedbackRequest.getScore());
-    return createdFeedback;
+      @RequestBody FeedbackRequest feedbackRequest) {
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    return feedbackService.createFeedback(idUser, feedbackRequest.getIdEvent(),
+        feedbackRequest.getContent(), feedbackRequest.getScore());
   }
 
-  @PutMapping("/{idFeedback}")
-  @Operation(
-      summary = "Modify existing feedback",
-      description = "Updates the feedback submitted by a user for an event."
-  )
-  public Feedback modifyFeedback(@PathVariable UUID idFeedback,
-      @Parameter(description = "id of event, content of feedbocak, note for this event") @RequestBody FeedbackRequest feedbackRequest) {
-    //Todo get current user id
-    UUID idUser = null;
-    Feedback updatedFeedback = feedbackService.modifyFeedback(idUser,
-        feedbackRequest.getIdEvent(), feedbackRequest.getContent(), feedbackRequest.getScore());
-    return updatedFeedback;
+  @PutMapping("/{idEvent}")
+  @Operation(summary = "Update existing feedback", description = "Updates the feedback submitted by a user for an event.")
+  public Feedback updateFeedback(
+      @PathVariable UUID idEvent,
+      @RequestBody FeedbackUpdateRequest feedbackUpdateRequest) {
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    return feedbackService.updateFeedback(idEvent, idUser, feedbackUpdateRequest.getContent(),
+        feedbackUpdateRequest.getScore());
   }
 
-  @DeleteMapping("/{idFeedback}")
-  @Operation(
-      summary = "Delete feedback",
-      description = "Deletes a specific feedback entry for an event."
-  )
-  public Boolean deleteFeedback(
-      @Parameter(description = "id of feedback") @PathVariable UUID idFeedback) {
-    feedbackService.deleteFeedback(idFeedback);
-    return true;
+  @DeleteMapping("/{idEvent}")
+  @Operation(summary = "Delete feedback", description = "Deletes a specific feedback entry for an event.Only the autor can do that")
+  public void deleteFeedback(
+      @PathVariable UUID idEvent
+  ) {
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    feedbackService.deleteFeedback(idEvent, idUser);
   }
 
   @GetMapping("/event/{idEvent}")
-  @Operation(
-      summary = "Get all feedback for an event",
-      description = "Retrieves all feedback entries submitted for a specific event."
-  )
-  public List<Feedback> getAllFeedbackOfAnEvent(
-      @Parameter(description = "id of event") @PathVariable UUID idEvent) {
-    List<Feedback> feedbacks = feedbackService.getAllFeedbackOfAnEvent(idEvent);
-    return feedbacks;
+  @Operation(summary = "Get all feedback for an event", description = "Retrieves all feedback entries submitted for a specific event.")
+  public List<Feedback> getAllFeedbackForEvent(
+      @PathVariable UUID idEvent) {
+    return feedbackService.getAllFeedbackByEventId(idEvent);
   }
 }

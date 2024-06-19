@@ -1,30 +1,29 @@
 package com.dauphine.eventmanagement.models;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "feedback")
 public class Feedback {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID id;
+  @EmbeddedId
+  private IdFeedback idFeedback;
 
   @ManyToOne
-  @JoinColumn(name = "idEvent", nullable = false)
+  @MapsId("idEvent") // Maps id Event part of composite ID
+  @JoinColumn(name = "id_event", nullable = false)
   private Event event;
 
   @ManyToOne
-  @JoinColumn(name = "idUser", nullable = false)
+  @MapsId("idUser") // Maps id User part of composite ID
+  @JoinColumn(name = "id_user", nullable = false)
   private User user;
 
   @Column(nullable = false)
@@ -36,13 +35,12 @@ public class Feedback {
   @Column(nullable = false)
   private Integer score; // Should validate that score is <= 5
 
-
-  public UUID getId() {
-    return id;
+  public IdFeedback getIdFeedback() {
+    return idFeedback;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
+  public void setIdFeedback(IdFeedback id) {
+    this.idFeedback = id;
   }
 
   public Event getEvent() {
@@ -81,7 +79,7 @@ public class Feedback {
     return score;
   }
 
-  public void setScore(Integer note) {
-    this.score = note;
+  public void setScore(Integer score) {
+    this.score = score;
   }
 }

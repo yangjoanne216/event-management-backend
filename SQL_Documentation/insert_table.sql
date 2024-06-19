@@ -93,3 +93,9 @@ INSERT INTO feedback (id_event, id_user, date, content, score)
 VALUES ('d35b7712-4657-40b1-8654-410b1110d361', '5e56d063-98fe-4b73-ab44-5467ed73b159',
         '2024-08-20 16:00:00', 'Very informative workshop on web tech.', 4);
 
+
+
+
+
+
+

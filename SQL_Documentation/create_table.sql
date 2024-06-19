@@ -60,12 +60,12 @@ CREATE TABLE participation
 
 CREATE TABLE feedback
 (
-    id_feedback UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    id_event    UUID                       NOT NULL,
-    id_user     UUID                       NOT NULL,
-    date        TIMESTAMP                  NOT NULL,
-    content     TEXT,
-    score       INTEGER CHECK (score <= 5) NOT NULL,
+    id_event UUID                       NOT NULL,
+    id_user  UUID                       NOT NULL,
+    date     TIMESTAMP                  NOT NULL,
+    content  TEXT,
+    score    INTEGER CHECK (score <= 5) NOT NULL,
+    PRIMARY KEY (id_event, id_user),
     FOREIGN KEY (id_event) REFERENCES event (id_event),
     FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
@@ -75,14 +75,23 @@ CREATE OR REPLACE FUNCTION update_event_score()
     RETURNS TRIGGER AS
 $$
 BEGIN
-    UPDATE event
-    SET score = (SELECT COALESCE(AVG(score), 0)
-                 FROM feedback
-                 WHERE id_event = NEW.id_event)
-    WHERE id_event = NEW.id_event;
-    RETURN NEW;
+    IF TG_OP = 'DELETE' THEN
+        UPDATE event
+        SET score = (SELECT COALESCE(AVG(score), 0)
+                     FROM feedback
+                     WHERE id_event = OLD.id_event)
+        WHERE id_event = OLD.id_event;
+    ELSE
+        UPDATE event
+        SET score = (SELECT COALESCE(AVG(score), 0)
+                     FROM feedback
+                     WHERE id_event = NEW.id_event)
+        WHERE id_event = NEW.id_event;
+    END IF;
+    RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE TRIGGER trg_feedback_insert
     AFTER INSERT
@@ -100,6 +109,13 @@ CREATE TRIGGER trg_feedback_delete
     AFTER DELETE
     ON feedback
     FOR EACH ROW
-EXECUTE FUNCTION update_event_score()
+EXECUTE FUNCTION update_event_score();
 
-select * from event
+
+
+
+
+
+
+
+

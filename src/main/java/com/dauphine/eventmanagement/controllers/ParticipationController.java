@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+//Todo: add endpoints for admin role
 @RestController
 @RequestMapping("/v1/participation")
 @Tag(
@@ -35,12 +35,13 @@ public class ParticipationController {
       summary = "Current user participates in an event",
       description = "Registers the user for the specified event by their IDs."
   )
-  public ResponseEntity<String> participate(
-      @Parameter(description = "id of event") @RequestParam UUID id_event) {
-    //Todo get current user id
-    UUID id_user = null;
-    participationService.participate(id_user, id_event);
-    return ResponseEntity.ok("Participation registered successfully.");
+  public String participate(
+      @Parameter(description = "id of event") @RequestParam UUID idEvent) {
+    //assumer yang yang is current user
+    //TODO：exception when already dans event
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    participationService.participate(idUser, idEvent);
+    return "Participation registered successfully.";
   }
 
   @DeleteMapping("/cancel")
@@ -48,12 +49,12 @@ public class ParticipationController {
       summary = "Cancel participation in an event",
       description = "Cancels the user's registration for the specified event by their IDs."
   )
-  public ResponseEntity<String> cancelParticipation(
+  public String cancelMyParticipation(
       @Parameter(description = "id of event") @RequestParam UUID id_event) {
-    //Todo get current user id
-    UUID id_user = null;
-    participationService.cancelParticipation(id_user, id_event);
-    return ResponseEntity.ok("Participation cancelled successfully.");
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    participationService.cancelParticipation(idUser, id_event);
+    return "Participation cancelled successfully.";
   }
 
   @GetMapping("/participants/{idEvent}")
@@ -61,10 +62,11 @@ public class ParticipationController {
       summary = "Get all participants of an event",
       description = "Retrieves a list of all participants registered for the specified event."
   )
-  public ResponseEntity<List<User>> getParticipants(
+  public List<User> getParticipants(
       @Parameter(description = "id of event") @PathVariable UUID idEvent) {
+    //Todo Exception pas de id of event
     List<User> participants = participationService.getParticipants(idEvent);
-    return ResponseEntity.ok(participants);
+    return participants;
   }
 }
 

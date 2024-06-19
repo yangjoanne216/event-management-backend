@@ -6,9 +6,9 @@ import java.util.UUID;
 
 public interface ParticipationService {
 
-  void participate(UUID id_user, UUID id_event);
+  void participate(UUID idUser, UUID idEvent);
 
-  void cancelParticipation(UUID id_user, UUID id_event);
+  void cancelParticipation(UUID idUser, UUID idEvent);
 
   List<User> getParticipants(UUID id_event);
 }

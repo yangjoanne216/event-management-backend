@@ -39,4 +39,6 @@ public interface EventService {
   List<Event> findEventsByType(UUID id_type_event);
 
   List<Event> findAllEventsOrderedByStartTime();
+
+  List<Event> findEventsByIdUser(UUID idUser);
 }

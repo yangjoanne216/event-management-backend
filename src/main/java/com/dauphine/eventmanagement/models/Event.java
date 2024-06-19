@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+//Todo create Dto for event
 @Entity
 @Table(name = "event")
 public class Event {
@@ -53,6 +54,14 @@ public class Event {
   private String image;
 
   private Double score;
+
+  public Event(UUID idEvent) {
+    this.idEvent = idEvent;
+  }
+
+  public Event() {
+
+  }
 
   public UUID getIdEvent() {
     return idEvent;

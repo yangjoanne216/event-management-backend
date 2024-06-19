@@ -72,7 +72,8 @@ public class EventController {
   )
   public List<Event> getAllMyEvents() {
     //Todo: get current user id et try to use particpationService to get all the event of the user participates in
-    UUID idOrganizer = null;
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
     return null;
   }
 
@@ -150,7 +151,7 @@ public class EventController {
       @Parameter(description = "Title,description,start time,end time, id of event,type of Location, Url for Image, id of city(location)") @RequestBody EventRequest eventRequest) {
     /*//Todo:Authentication auth = SecurityContextHolder.getContext().getAuthentication();
      UUID idOrganizer = auth.getId(); */
-    //assumer yang yang is organizer
+    //assumer yang yang is current user
     UUID idOrganizer = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
     return eventService.createEvent(eventRequest.getTitle(),
         eventRequest.getDescription(),

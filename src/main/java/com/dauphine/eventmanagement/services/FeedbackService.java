@@ -6,11 +6,11 @@ import java.util.UUID;
 
 public interface FeedbackService {
 
-  Feedback createFeedback(UUID id_user, UUID id_event, String content, Integer note);
+  Feedback updateFeedback(UUID eventId, UUID userId, String content, Integer score);
 
-  Feedback modifyFeedback(UUID id_user, UUID id_event, String content, Integer note);
+  void deleteFeedback(UUID eventId, UUID userId);
 
-  void deleteFeedback(UUID id_feedback);
+  List<Feedback> getAllFeedbackByEventId(UUID eventId);
 
-  List<Feedback> getAllFeedbackOfAnEvent(UUID id_event);
+  Feedback createFeedback(UUID idUser, UUID idEvent, String content, Integer score);
 }

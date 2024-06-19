@@ -134,6 +134,14 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public List<Event> findEventsByIdUser(UUID idUser) {
+    /*User user = userRepository.findById(idUser)
+        .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + idUser));
+    return user.getEvents();*/
+    return null;
+  }
+
+  @Override
   public List<Event> findAllEventsOrderedByScore() {
     return eventRepository.findAllByOrderByScoreDesc();
   }
