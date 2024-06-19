@@ -74,7 +74,7 @@ public class EventController {
     //Todo: get current user id et try to use particpationService to get all the event of the user participates in
     //assumer yang yang is current user
     UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
-    return null;
+    return eventService.findEventsByIdUser(idUser);
   }
 
   @GetMapping("/my/past")
@@ -84,8 +84,9 @@ public class EventController {
   )
   public List<Event> getAllMyPastEvents() {
     //Todo: get current user id et try to use particpationService to get all the event of the user has participated in
-
-    return null;
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    return eventService.findPastEventsByIdUser(idUser);
   }
 
   @GetMapping("/my/future")
@@ -95,7 +96,9 @@ public class EventController {
   )
   public List<Event> getAllMyFutureEvents() {
     //Todo: get current user id et try to use particpationService to get all the event of the user will participate in
-    return null;
+    //assumer yang yang is current user
+    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    return eventService.findFutureEventsByIdUser(idUser);
   }
 
 

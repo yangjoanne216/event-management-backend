@@ -1,5 +1,6 @@
 package com.dauphine.eventmanagement.repositories;
 
+import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.models.IdParticipation;
 import com.dauphine.eventmanagement.models.Participation;
 import com.dauphine.eventmanagement.models.User;
@@ -14,4 +15,13 @@ public interface ParticipationRepository extends JpaRepository<Participation, Id
   List<User> findParticipantsByEventId(UUID idEvent);
 
   void deleteByIdIdEventAndIdIdUser(UUID idEvent, UUID idUser);
+
+  @Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser")
+  List<Event> findEventsByIdIdUser(UUID idUser);
+
+  @Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser AND p.event.startTime < CURRENT_TIMESTAMP")
+  List<Event> findPastEventsByIdIdUser(UUID idUser);
+
+  @Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser AND p.event.startTime > CURRENT_TIMESTAMP")
+  List<Event> findFutureEventsByIdIdUser(UUID idUser);
 }

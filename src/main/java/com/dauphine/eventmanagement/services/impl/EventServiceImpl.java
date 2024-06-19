@@ -7,6 +7,7 @@ import com.dauphine.eventmanagement.models.TypeLocation;
 import com.dauphine.eventmanagement.models.User;
 import com.dauphine.eventmanagement.repositories.EventRepository;
 import com.dauphine.eventmanagement.repositories.LocationRepository;
+import com.dauphine.eventmanagement.repositories.ParticipationRepository;
 import com.dauphine.eventmanagement.repositories.TypeEventRepository;
 import com.dauphine.eventmanagement.repositories.UserRepository;
 import com.dauphine.eventmanagement.services.EventService;
@@ -25,13 +26,16 @@ public class EventServiceImpl implements EventService {
 
   private final UserRepository userRepository;
 
+  private final ParticipationRepository participationRepository;
+
   public EventServiceImpl(EventRepository eventRepository,
       TypeEventRepository typeEventRepository, LocationRepository locationRepository,
-      UserRepository userRepository) {
+      UserRepository userRepository, ParticipationRepository participationRepository) {
     this.eventRepository = eventRepository;
     this.typeEventRepository = typeEventRepository;
     this.locationRepository = locationRepository;
     this.userRepository = userRepository;
+    this.participationRepository = participationRepository;
   }
 
   @Override
@@ -135,10 +139,17 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public List<Event> findEventsByIdUser(UUID idUser) {
-    /*User user = userRepository.findById(idUser)
-        .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + idUser));
-    return user.getEvents();*/
-    return null;
+    return participationRepository.findEventsByIdIdUser(idUser);
+  }
+
+  @Override
+  public List<Event> findPastEventsByIdUser(UUID idUser) {
+    return participationRepository.findPastEventsByIdIdUser(idUser);
+  }
+
+  @Override
+  public List<Event> findFutureEventsByIdUser(UUID idUser) {
+    return participationRepository.findFutureEventsByIdIdUser(idUser);
   }
 
   @Override
