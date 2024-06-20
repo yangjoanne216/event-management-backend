@@ -4,13 +4,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 //Todo create Dto for event
@@ -54,6 +57,13 @@ public class Event {
   private String image;
 
   private Double score;
+  // Participants via Participation
+  @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+  private List<Participation> participants;
+
+  // Feedbacks
+  @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+  private List<Feedback> feedbacks;
 
   public Event(UUID idEvent) {
     this.idEvent = idEvent;
@@ -143,11 +153,32 @@ public class Event {
     this.score = note;
   }
 
+  public void setScore(Double score) {
+    this.score = score;
+  }
+
   public User getOrganizer() {
     return organizer;
   }
 
   public void setOrganizer(User organizer) {
     this.organizer = organizer;
+  }
+
+  public List<Participation> getParticipants() {
+    return participants;
+  }
+
+  public void setParticipants(
+      List<Participation> participants) {
+    this.participants = participants;
+  }
+
+  public List<Feedback> getFeedbacks() {
+    return feedbacks;
+  }
+
+  public void setFeedbacks(List<Feedback> feedbacks) {
+    this.feedbacks = feedbacks;
   }
 }

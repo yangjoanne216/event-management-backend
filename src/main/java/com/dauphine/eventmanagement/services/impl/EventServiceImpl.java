@@ -60,7 +60,7 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public Event findEventById(UUID idEvent) {
-    return eventRepository.findById(idEvent).orElse(null);
+    return eventRepository.findByIdEvent(idEvent);
   }
 
   @Override
