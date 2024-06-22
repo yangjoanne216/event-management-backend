@@ -40,15 +40,15 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public List<Event> findAllEvents() {
-    return eventRepository.findAll();
+    return eventRepository.findAllByOrderByStartTimeDesc();
   }
 
   @Override
   public List<Event> getAllLikeTitle(String title) {
-    return eventRepository.findAllLikeTitle(title);
+    return eventRepository.findAllLikeTitleOrderByStartTimeDesc(title);
   }
 
-  @Override
+  /*@Override
   public List<Event> findPastEvents() {
     return eventRepository.findPastEvents(LocalDateTime.now());
   }
@@ -56,11 +56,11 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<Event> findFutureEvents() {
     return eventRepository.findFutureEvents(LocalDateTime.now());
-  }
+  }*/
 
   @Override
   public Event findEventById(UUID idEvent) {
-    return eventRepository.findByIdEvent(idEvent);
+    return eventRepository.findByIdEventOrderByStartTimeDesc(idEvent).orElse(null);
   }
 
   @Override
@@ -118,23 +118,18 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<Event> findEventsByTypeId(UUID idTypeEvent) {
     TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent).orElse(null);
-    return eventRepository.findAllByTypeEvent(typeEvent);
+    return eventRepository.findAllByTypeEventOrderByStartTimeDesc(typeEvent);
   }
 
   @Override
   public List<Event> findEventsByType(UUID idTypeEvent) {
     TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent).orElse(null);
-    return eventRepository.findAllByTypeEvent(typeEvent);
+    return eventRepository.findAllByTypeEventOrderByStartTimeDesc(typeEvent);
   }
 
   @Override
   public List<Event> findEventsByDateRange(LocalDateTime start, LocalDateTime end) {
-    return eventRepository.findByDateRange(start, end);
-  }
-
-  @Override
-  public List<Event> findAllEventsOrderedByStartTime() {
-    return eventRepository.findAllByOrderByStartTime();
+    return eventRepository.findByDateRangeOrderByStartTime(start, end);
   }
 
   @Override
@@ -143,6 +138,16 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public List<Event> findAllEventsOrderedByStartTime() {
+    return eventRepository.findAllByOrderByStartTime();
+  }
+
+  @Override
+  public List<Event> findAllEventsOrderedByStartTimeDesc() {
+    return eventRepository.findAllByOrderByStartTimeDesc();
+  }
+
+  /*@Override
   public List<Event> findPastEventsByIdUser(UUID idUser) {
     return participationRepository.findPastEventsByIdIdUser(idUser);
   }
@@ -150,16 +155,16 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<Event> findFutureEventsByIdUser(UUID idUser) {
     return participationRepository.findFutureEventsByIdIdUser(idUser);
-  }
+  }*/
 
   @Override
   public List<Event> findAllEventsOrderedByScore() {
-    return eventRepository.findAllByOrderByScoreDesc();
+    return eventRepository.findAllByOrderByScore();
   }
 
   @Override
   public List<Event> findEventsByLocationId(UUID idCity) {
     Location location = locationRepository.findById(idCity).orElse(null);
-    return eventRepository.findAllByLocation(location);
+    return eventRepository.findAllByLocationOrderByStartTimeDesc(location);
   }
 }

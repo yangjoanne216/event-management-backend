@@ -6,20 +6,28 @@ import java.util.UUID;
 public class FeedbackDTO {
 
   private UUID idEvent;
-  private UserDTO userDto;
+  private UserDTO participant;
   private LocalDateTime date;
   private String content;
   private Integer score;
 
-
-  public FeedbackDTO(UUID idEvent, UserDTO userDto, LocalDateTime date, String content,
+  public FeedbackDTO(UUID idEvent, UserDTO participant, LocalDateTime date, String content,
       Integer score) {
     this.idEvent = idEvent;
-    this.userDto = userDto;
+    this.participant = participant;
     this.date = date;
     this.content = content;
     this.score = score;
   }
+
+  public UserDTO getParticipant() {
+    return participant;
+  }
+
+  public void setParticipant(UserDTO participant) {
+    this.participant = participant;
+  }
+
 
   public UUID getIdEvent() {
     return idEvent;
@@ -29,13 +37,6 @@ public class FeedbackDTO {
     this.idEvent = idEvent;
   }
 
-  public UserDTO getUserDto() {
-    return userDto;
-  }
-
-  public void setUserDto(UserDTO userDto) {
-    this.userDto = userDto;
-  }
 
   public LocalDateTime getDate() {
     return date;

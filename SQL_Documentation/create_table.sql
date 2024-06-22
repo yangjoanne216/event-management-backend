@@ -111,11 +111,45 @@ CREATE TRIGGER trg_feedback_delete
     FOR EACH ROW
 EXECUTE FUNCTION update_event_score();
 
+CREATE OR REPLACE FUNCTION check_feedback_date()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    -- Check if feedback date is before today and after event start time
+    IF (NEW.date >= CURRENT_DATE) THEN
+        RAISE EXCEPTION 'Feedback date must be before today.';
+    END IF;
+
+    -- Check if the feedback date is after the event's start time
+    IF (NEW.date <= (SELECT start_time FROM event WHERE id_event = NEW.id_event)) THEN
+        RAISE EXCEPTION 'Feedback date must be after the event start time.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 创建触发器：防止组织者参加自己创建的事件
+CREATE OR REPLACE FUNCTION prevent_organizer_participation()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    -- 检查插入的用户ID是否为该事件的组织者ID
+    IF (SELECT id_organizer FROM event WHERE id_event = NEW.id_event) = NEW.id_user THEN
+        RAISE EXCEPTION 'Organizer cannot participate in their own event';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prevent_organizer_participation_trigger
+    BEFORE INSERT
+    ON participation
+    FOR EACH ROW
+EXECUTE FUNCTION prevent_organizer_participation();
 
 
-
-
-
-
-
+/* AI in Healthcare Meetup - Yang YANG */
+INSERT INTO participation (id_event, id_user)
+VALUES ('a81e5b58-61d3-4427-bd17-2fd816a2a7e8', '58bdba14-9cec-4f39-bc27-43a01afef3ae');
 

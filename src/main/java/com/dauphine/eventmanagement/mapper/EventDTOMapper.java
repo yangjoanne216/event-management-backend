@@ -4,6 +4,7 @@ import com.dauphine.eventmanagement.dto.EventDTO;
 import com.dauphine.eventmanagement.dto.FeedbackDTO;
 import com.dauphine.eventmanagement.dto.UserDTO;
 import com.dauphine.eventmanagement.models.Event;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,12 +19,12 @@ public class EventDTOMapper implements Function<Event, EventDTO> {
   @Override
   public EventDTO apply(Event event) {
     UserDTO organizer = userDTOMapper.apply(event.getOrganizer());
-    List<UserDTO> participants = event.getParticipants().stream()
+    List<UserDTO> participants = (event.getParticipants() != null ? event.getParticipants().stream()
         .map(participation -> userDTOMapper.apply(participation.getUser()))
-        .collect(Collectors.toList());
-    List<FeedbackDTO> feedbacks = event.getFeedbacks().stream()
+        .collect(Collectors.toList()) : Collections.emptyList());
+    List<FeedbackDTO> feedbacks = (event.getFeedbacks() != null ? event.getFeedbacks().stream()
         .map(feedbackDTOMapper)
-        .collect(Collectors.toList());
+        .collect(Collectors.toList()) : Collections.emptyList());
     return new EventDTO(event.getIdEvent(),
         event.getTitle(),
         event.getDescription(),
@@ -31,7 +32,8 @@ public class EventDTOMapper implements Function<Event, EventDTO> {
         event.getEndTime(),
         event.getTypeEvent().getName(),
         event.getTypeLocation().getName(),
-        organizer, participants, feedbacks);
+        (event.getLocation() != null ? event.getLocation().getName() : ""),
+        organizer, participants, feedbacks, event.getScore());
 
 
   }

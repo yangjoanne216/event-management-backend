@@ -14,6 +14,7 @@ public class EventRequest {
   private String image;
   private UUID locationId;
 
+
   public String getTitle() {
     return title;
   }

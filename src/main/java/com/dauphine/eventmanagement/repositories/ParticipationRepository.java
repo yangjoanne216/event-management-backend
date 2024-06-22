@@ -19,9 +19,9 @@ public interface ParticipationRepository extends JpaRepository<Participation, Id
   @Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser")
   List<Event> findEventsByIdIdUser(UUID idUser);
 
-  @Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser AND p.event.startTime < CURRENT_TIMESTAMP")
+  /*@Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser AND p.event.startTime < CURRENT_TIMESTAMP")
   List<Event> findPastEventsByIdIdUser(UUID idUser);
 
   @Query("SELECT p.event FROM Participation p WHERE p.id.idUser = :idUser AND p.event.startTime > CURRENT_TIMESTAMP")
-  List<Event> findFutureEventsByIdIdUser(UUID idUser);
+  List<Event> findFutureEventsByIdIdUser(UUID idUser);*/
 }

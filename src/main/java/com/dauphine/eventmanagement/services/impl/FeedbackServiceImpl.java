@@ -51,7 +51,7 @@ public class FeedbackServiceImpl implements FeedbackService {
   public Feedback updateFeedback(UUID idEvent, UUID idUser, String content, Integer score) {
     IdFeedback id = new IdFeedback(idEvent, idUser);
     Feedback feedback = feedbackRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Feedback not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Feedback not found for current user"));
 
     Event event = eventRepository.findById(idEvent)
         .orElseThrow(() -> new RuntimeException("Event not found with ID: " + idEvent));
@@ -62,7 +62,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     feedback.setUser(user);
     feedback.setContent(content);
     feedback.setScore(score);
-    
+
     return feedbackRepository.save(feedback);
   }
 

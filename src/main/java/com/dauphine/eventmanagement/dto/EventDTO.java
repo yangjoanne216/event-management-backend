@@ -13,14 +13,19 @@ public class EventDTO {
   private LocalDateTime endTime;
   private String typeEventName; //getTypEvent().getName()
   private String typeLocationName; //getTypeLocation().getName()
+
+  private String locationName;
   private UserDTO organizer;
   private List<UserDTO> participants;
   private List<FeedbackDTO> feedbacks;
 
+  private Double score;
+
 
   public EventDTO(UUID idEvent, String title, String description, LocalDateTime startTime,
-      LocalDateTime endTime, String typeEventName, String typeLocationName, UserDTO organizer,
-      List<UserDTO> participants, List<FeedbackDTO> feedbacks) {
+      LocalDateTime endTime, String typeEventName, String typeLocationName, String locationName,
+      UserDTO organizer,
+      List<UserDTO> participants, List<FeedbackDTO> feedbacks, Double score) {
     this.idEvent = idEvent;
     this.title = title;
     this.description = description;
@@ -28,9 +33,11 @@ public class EventDTO {
     this.endTime = endTime;
     this.typeEventName = typeEventName;
     this.typeLocationName = typeLocationName;
+    this.locationName = locationName;
     this.organizer = organizer;
     this.participants = participants;
     this.feedbacks = feedbacks;
+    this.score = score;
   }
 
   public UUID getIdEvent() {
@@ -111,5 +118,21 @@ public class EventDTO {
 
   public void setFeedbacks(List<FeedbackDTO> feedbacks) {
     this.feedbacks = feedbacks;
+  }
+
+  public String getLocationName() {
+    return locationName;
+  }
+
+  public void setLocationName(String locationName) {
+    this.locationName = locationName;
+  }
+
+  public Double getScore() {
+    return score;
+  }
+
+  public void setScore(Double score) {
+    this.score = score;
   }
 }

@@ -14,8 +14,8 @@ public class FeedbackDTOMapper implements Function<Feedback, FeedbackDTO> {
 
   @Override
   public FeedbackDTO apply(Feedback feedback) {
-    UserDTO userDto = userDTOMapper.apply(feedback.getUser());
-    return new FeedbackDTO(feedback.getIdFeedback().getIdEvent(), userDto, feedback.getDate(),
+    UserDTO participant = userDTOMapper.apply(feedback.getUser());
+    return new FeedbackDTO(feedback.getIdFeedback().getIdEvent(), participant, feedback.getDate(),
         feedback.getContent(),
         feedback.getScore());
   }

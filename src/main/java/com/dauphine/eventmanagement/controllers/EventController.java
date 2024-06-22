@@ -52,7 +52,7 @@ public class EventController {
     return events.stream().map(eventDTOMapper::apply).collect(Collectors.toList());
   }
 
-  @GetMapping("/past")
+ /* @GetMapping("/past")
   @Operation(
       summary = "Retrieve all past events",
       description = "Fetches a list of all past events."
@@ -70,7 +70,7 @@ public class EventController {
   public List<EventDTO> getAllFutureEvents() {
     return eventService.findFutureEvents().stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
-  }
+  }*/
 
   @GetMapping("/my")
   @Operation(
@@ -85,13 +85,13 @@ public class EventController {
         .collect(Collectors.toList());
   }
 
-  @GetMapping("/my/past")
+  /*@GetMapping("/my/past")
   @Operation(
       summary = "Retrieve all past events the user has participated in",
       description = "Fetches a list of all past events that the currently authenticated user has participated in."
   )
   public List<EventDTO> getAllMyPastEvents() {
-    //Todo: get current user id et try to use particpationService to get all the event of the user has participated in
+
     //assumer yang yang is current user
     UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
     return eventService.findPastEventsByIdUser(idUser).stream().map(eventDTOMapper::apply)
@@ -104,12 +104,11 @@ public class EventController {
       description = "Fetches a list of all future events that the currently authenticated user is scheduled to participate in."
   )
   public List<EventDTO> getAllMyFutureEvents() {
-    //Todo: get current user id et try to use particpationService to get all the event of the user will participate in
     //assumer yang yang is current user
     UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
     return eventService.findFutureEventsByIdUser(idUser).stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
-  }
+  }*/
 
 
   @GetMapping("/{idEvent}")
@@ -208,9 +207,9 @@ public class EventController {
     eventService.deleteEvent(idEvent);
   }
 
-  @GetMapping("/sortedByStartTime")
+  @GetMapping("/sortedByStartTimeAsc")
   @Operation(
-      summary = "Order events by start time",
+      summary = "Order events by start time old to new",
       description = "Fetches all events ordered by their start times."
   )
   public List<EventDTO> orderEventsByStartTime() {

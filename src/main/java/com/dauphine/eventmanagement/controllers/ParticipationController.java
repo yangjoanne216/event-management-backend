@@ -1,5 +1,7 @@
 package com.dauphine.eventmanagement.controllers;
 
+import com.dauphine.eventmanagement.dto.UserDTO;
+import com.dauphine.eventmanagement.mapper.UserDTOMapper;
 import com.dauphine.eventmanagement.models.User;
 import com.dauphine.eventmanagement.services.ParticipationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ParticipationController {
 
   private final ParticipationService participationService;
+  private final UserDTOMapper userDTOMapper;
 
-  public ParticipationController(ParticipationService participationService) {
+  public ParticipationController(ParticipationService participationService,
+      UserDTOMapper userDTOMapper) {
     this.participationService = participationService;
+    this.userDTOMapper = userDTOMapper;
   }
 
   @PostMapping("/participate")
@@ -62,11 +68,12 @@ public class ParticipationController {
       summary = "Get all participants of an event",
       description = "Retrieves a list of all participants registered for the specified event."
   )
-  public List<User> getParticipants(
+  public List<UserDTO> getParticipants(
       @Parameter(description = "id of event") @PathVariable UUID idEvent) {
     //Todo Exception pas de id of event
     List<User> participants = participationService.getParticipants(idEvent);
-    return participants;
+    return participants.stream().map(userDTOMapper::apply)
+        .collect(Collectors.toList());
   }
 }
 

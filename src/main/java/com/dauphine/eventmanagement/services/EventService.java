@@ -11,9 +11,9 @@ public interface EventService {
 
   List<Event> getAllLikeTitle(String title);
 
-  public List<Event> findPastEvents();
+  /*public List<Event> findPastEvents();
 
-  public List<Event> findFutureEvents();
+  public List<Event> findFutureEvents();*/
 
   public Event findEventById(UUID id_event);
 
@@ -38,11 +38,13 @@ public interface EventService {
 
   List<Event> findEventsByType(UUID id_type_event);
 
-  List<Event> findAllEventsOrderedByStartTime();
+  List<Event> findAllEventsOrderedByStartTimeDesc();
 
   List<Event> findEventsByIdUser(UUID idUser);
 
-  List<Event> findPastEventsByIdUser(UUID idUser);
+  List<Event> findAllEventsOrderedByStartTime();
 
-  List<Event> findFutureEventsByIdUser(UUID idUser);
+  //List<Event> findPastEventsByIdUser(UUID idUser);
+
+  //List<Event> findFutureEventsByIdUser(UUID idUser);
 }
