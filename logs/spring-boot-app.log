@@ -3050,3 +3050,6 @@ jakarta.persistence.EntityNotFoundException: Unable to find event id eb687ce6-8b
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
 	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
 
+2024-06-23T15:29:16.317+02:00  INFO 7724 --- [Event Management Backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-06-23T15:29:16.330+02:00  INFO 7724 --- [Event Management Backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-06-23T15:29:17.673+02:00  INFO 7724 --- [Event Management Backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

@@ -1,5 +1,6 @@
 package com.dauphine.eventmanagement.services;
 
+import com.dauphine.eventmanagement.dto.SearchCriteria;
 import com.dauphine.eventmanagement.models.Event;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,6 +46,8 @@ public interface EventService {
   List<Event> findAllEventsOrderedByStartTime();
 
   List<Event> findAllMyEventsByUserEmail(String email);
+
+  List<Event> searchEvents(SearchCriteria criteria);
 
   //List<Event> findPastEventsByIdUser(UUID idUser);
 

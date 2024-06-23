@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
-public class Securityconfig {
+public class SecurityConfig {
 
   private final UserAuthenticationProvider userAuthenticationProvider;
 
@@ -25,12 +25,14 @@ public class Securityconfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "v1/auth/**")
-            .permitAll()
-            .anyRequest()
-            .authenticated())
+            .requestMatchers(HttpMethod.POST, "/v1/auth/**").permitAll()
+            .requestMatchers("/v1/events/search").permitAll() // Allow all methods
+            .requestMatchers("/v1/locations").permitAll()
+            .anyRequest().authenticated())
         .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider),
             UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
+
+
 }

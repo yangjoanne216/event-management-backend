@@ -1,5 +1,6 @@
 package com.dauphine.eventmanagement.services.impl;
 
+import com.dauphine.eventmanagement.dto.SearchCriteria;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.models.Location;
 import com.dauphine.eventmanagement.models.TypeEvent;
@@ -11,11 +12,18 @@ import com.dauphine.eventmanagement.repositories.ParticipationRepository;
 import com.dauphine.eventmanagement.repositories.TypeEventRepository;
 import com.dauphine.eventmanagement.repositories.UserRepository;
 import com.dauphine.eventmanagement.services.EventService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -160,4 +168,47 @@ public class EventServiceImpl implements EventService {
     Location location = locationRepository.findById(idCity).orElse(null);
     return eventRepository.findAllByLocationOrderByStartTimeDesc(location);
   }
+
+  @Override
+  public List<Event> searchEvents(SearchCriteria criteria) {
+    Specification<Event> spec = new EventSpecification(criteria);
+    Sort sort = Sort.by(
+        criteria.getOrderBy().equals("score") ? Sort.Direction.DESC : Sort.Direction.ASC,
+        criteria.getOrderBy().equals("score") ? "score" : "startTime");
+    return eventRepository.findAll(spec, sort);
+  }
+
+  public class EventSpecification implements Specification<Event> {
+
+    private SearchCriteria criteria;
+
+    public EventSpecification(SearchCriteria criteria) {
+      this.criteria = criteria;
+    }
+
+    @Override
+    public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> query,
+        CriteriaBuilder builder) {
+      List<Predicate> predicates = new ArrayList<>();
+
+      if (criteria.getEventTypes() != null && !criteria.getEventTypes().isEmpty()) {
+        predicates.add(root.get("typeEvent").get("name").in(criteria.getEventTypes()));
+      }
+      if (criteria.getCities() != null && !criteria.getCities().isEmpty()) {
+        predicates.add(root.get("location").get("name").in(criteria.getCities()));
+      }
+      if (criteria.getLocationTypes() != null && !criteria.getLocationTypes().isEmpty()) {
+        predicates.add(root.get("typeLocation").in(criteria.getLocationTypes()));
+      }
+      if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
+        predicates.add(
+            builder.between(root.get("startTime"), criteria.getStartDate(), criteria.getEndDate()));
+      }
+
+      return builder.and(predicates.toArray(new Predicate[0]));
+    }
+  }
+
 }
+
+

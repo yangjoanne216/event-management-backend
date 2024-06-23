@@ -2,6 +2,7 @@ package com.dauphine.eventmanagement.controllers;
 
 import com.dauphine.eventmanagement.dto.EventDTO;
 import com.dauphine.eventmanagement.dto.EventRequest;
+import com.dauphine.eventmanagement.dto.SearchCriteria;
 import com.dauphine.eventmanagement.mapper.EventDTOMapper;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.services.EventService;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -211,6 +213,21 @@ public class EventController {
   public List<EventDTO> orderEventsByScore() {
     return eventService.findAllEventsOrderedByScore().stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<List<EventDTO>> searchEvents(@RequestParam List<String> eventTypes,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+      @RequestParam List<String> cities,
+      @RequestParam List<String> locationTypes,
+      @RequestParam String orderBy) {
+    SearchCriteria criteria = new SearchCriteria(eventTypes, startDate, endDate, cities,
+        locationTypes, orderBy);
+    List<Event> events = eventService.searchEvents(criteria);
+    List<EventDTO> eventDTOs = events.stream().map(eventDTOMapper::apply)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(eventDTOs);
   }
 
 }
