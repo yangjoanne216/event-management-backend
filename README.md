@@ -10,7 +10,7 @@
 | **User**       | zymejaql                                                 |
 | **Password**   | eEeLOMC7PylAvmGhR7rtna9AQAAsbVMj                         |
 | **Database**   | zymejaql                                                 |
-| **URL**        | jdbc:postgresql://flora.db.elephantsql.com:5432/zymejaql |
+| **URL**        | jdbc:postgresql://flora.db.elephantsql.com:5432/zymejaql?stringtype=unspecified |
 
 ### Event Management 2
 
@@ -22,4 +22,4 @@ Port       | 5432                                                               
 User       | nizybsdl                                                                               |
 Password   | 01N0MXhVJXeTZjtRaEWj0yOaDSZ2ZLWg                                                       |
 Database   | nizybsdl                                                                               |
-URL        | jdbc:postgresql://lucky.db.elephantsql.com:5432/nizybsdl |
+URL        | jdbc:postgresql://lucky.db.elephantsql.com:5432/nizybsdl?stringtype=unspecified |
