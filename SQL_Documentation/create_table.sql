@@ -125,7 +125,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 创建触发器：防止组织者参加自己创建的事件
-CREATE OR REPLACE FUNCTION prevent_organizer_participation()
+CREATE OR REPLACE FUNCTION event_organizer_participation()
     RETURNS TRIGGER AS
 $$
 BEGIN
