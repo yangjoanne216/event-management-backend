@@ -44,6 +44,8 @@ public interface EventService {
 
   List<Event> findAllEventsOrderedByStartTime();
 
+  List<Event> findAllMyEventsByUserEmail(String email);
+
   //List<Event> findPastEventsByIdUser(UUID idUser);
 
   //List<Event> findFutureEventsByIdUser(UUID idUser);

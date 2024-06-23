@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
@@ -41,5 +42,9 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
   Optional<Event> findByIdEventOrderByStartTimeDesc(UUID idEvent);
 
+  @Query("SELECT e FROM Event e JOIN e.participants p WHERE p.user.email = :email")
+  List<Event> findEventsByParticipantEmail(@Param("email") String email);
 
+  @Query("SELECT e FROM Event e WHERE e.organizer.idUser = :idUser")
+  List<Event> findEventsByIdOrganizer(@Param("idUser") UUID idUser);
 }

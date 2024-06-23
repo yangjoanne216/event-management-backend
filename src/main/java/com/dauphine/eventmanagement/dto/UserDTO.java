@@ -1,11 +1,22 @@
 package com.dauphine.eventmanagement.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserDTO {
 
   private String email;
   private String firstname;
   private String lastname;
   private String avatar;
+
+  private String token;
 
   public UserDTO(String email, String firstname, String lastname, String avatar) {
     this.email = email;
@@ -44,5 +55,13 @@ public class UserDTO {
 
   public void setAvatar(String avatar) {
     this.avatar = avatar;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

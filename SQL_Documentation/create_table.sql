@@ -153,3 +153,5 @@ EXECUTE FUNCTION prevent_organizer_participation();
 INSERT INTO participation (id_event, id_user)
 VALUES ('a81e5b58-61d3-4427-bd17-2fd816a2a7e8', '58bdba14-9cec-4f39-bc27-43a01afef3ae');
 
+select *
+from users

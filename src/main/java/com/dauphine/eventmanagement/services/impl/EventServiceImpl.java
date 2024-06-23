@@ -14,6 +14,8 @@ import com.dauphine.eventmanagement.services.EventService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,16 +49,6 @@ public class EventServiceImpl implements EventService {
   public List<Event> getAllLikeTitle(String title) {
     return eventRepository.findAllLikeTitleOrderByStartTimeDesc(title);
   }
-
-  /*@Override
-  public List<Event> findPastEvents() {
-    return eventRepository.findPastEvents(LocalDateTime.now());
-  }
-
-  @Override
-  public List<Event> findFutureEvents() {
-    return eventRepository.findFutureEvents(LocalDateTime.now());
-  }*/
 
   @Override
   public Event findEventById(UUID idEvent) {
@@ -143,19 +135,20 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public List<Event> findAllEventsOrderedByStartTimeDesc() {
-    return eventRepository.findAllByOrderByStartTimeDesc();
-  }
-
-  /*@Override
-  public List<Event> findPastEventsByIdUser(UUID idUser) {
-    return participationRepository.findPastEventsByIdIdUser(idUser);
+  public List<Event> findAllMyEventsByUserEmail(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    List<Event> organizedEvents = eventRepository.findEventsByIdOrganizer(user.getIdUser());
+    List<Event> participatedEvents = participationRepository.findEventsByIdIdUser(user.getIdUser());
+    return Stream.concat(organizedEvents.stream(), participatedEvents.stream())
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   @Override
-  public List<Event> findFutureEventsByIdUser(UUID idUser) {
-    return participationRepository.findFutureEventsByIdIdUser(idUser);
-  }*/
+  public List<Event> findAllEventsOrderedByStartTimeDesc() {
+    return eventRepository.findAllByOrderByStartTimeDesc();
+  }
 
   @Override
   public List<Event> findAllEventsOrderedByScore() {

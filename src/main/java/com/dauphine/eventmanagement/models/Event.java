@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-//Todo create Dto for event
 @Entity
 @Table(name = "event")
 public class Event {

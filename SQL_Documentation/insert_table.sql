@@ -31,6 +31,7 @@ INSERT INTO users(id_user, email, password, lastname, firstname, avatar)
 VALUES ('5e56d063-98fe-4b73-ab44-5467ed73b159', 'binh-minh.nguyen@dauphine.com', 'password456',
         'Nguyen', 'Minh', 'https://example.com/avatar/minhnguyen.png');
 
+
 -- 4. 插入事件
 /*Events*/
 /*Annual Tech Conference- Organizer: Yang Yang, id_type_event: Conference, id_location: Paris */
@@ -117,3 +118,6 @@ VALUES ('c8172fa3-02ba-440c-a01a-ef0f48201ef1', 'b221c140-7a90-4036-a64d-3f141b7
 INSERT INTO feedback (id_event, id_user, date, content, score)
 VALUES ('d35b7712-4657-40b1-8654-410b1110d361', '5e56d063-98fe-4b73-ab44-5467ed73b159',
         '2024-06-15 16:00:00', 'Very informative workshop on web tech.', 4);
+
+select *
+from users;

@@ -5,6 +5,7 @@ import com.dauphine.eventmanagement.dto.EventRequest;
 import com.dauphine.eventmanagement.mapper.EventDTOMapper;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.services.EventService;
+import com.dauphine.eventmanagement.services.UserService;
 import com.dauphine.eventmanagement.services.impl.EventServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/v1/events")
@@ -32,10 +36,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class EventController {
 
   private final EventService eventService;
+  private final UserService userService;
   private final EventDTOMapper eventDTOMapper;
 
-  public EventController(EventServiceImpl eventServiceImpl, EventDTOMapper eventDTOMapper) {
+  public EventController(EventServiceImpl eventServiceImpl, UserService userService,
+      EventDTOMapper eventDTOMapper) {
     this.eventService = eventServiceImpl;
+    this.userService = userService;
     this.eventDTOMapper = eventDTOMapper;
   }
 
@@ -52,64 +59,17 @@ public class EventController {
     return events.stream().map(eventDTOMapper::apply).collect(Collectors.toList());
   }
 
- /* @GetMapping("/past")
-  @Operation(
-      summary = "Retrieve all past events",
-      description = "Fetches a list of all past events."
-  )
-  public List<EventDTO> getAllPastEvents() {
-    return eventService.findPastEvents().stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
-  }
-
-  @GetMapping("/future")
-  @Operation(
-      summary = "Retrieve all future events",
-      description = "Fetches a list of all future events."
-  )
-  public List<EventDTO> getAllFutureEvents() {
-    return eventService.findFutureEvents().stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
-  }*/
-
   @GetMapping("/my")
   @Operation(
-      summary = "Retrieve all events the user participates in",
-      description = "Fetches a list of all events that the currently authenticated user participates in regardless of the event date."
+      summary = "Retrieve all events the user participates in or organizes",
+      description = "Fetches a list of all events that the currently authenticated user participates in or organizes"
   )
   public List<EventDTO> getAllMyEvents() {
     //Todo: get current user id et try to use particpationService to get all the event of the user participates in
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
-    return eventService.findEventsByIdUser(idUser).stream().map(eventDTOMapper::apply)
+    String email = userService.getCurrentUserEmail();
+    return eventService.findAllMyEventsByUserEmail(email).stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
   }
-
-  /*@GetMapping("/my/past")
-  @Operation(
-      summary = "Retrieve all past events the user has participated in",
-      description = "Fetches a list of all past events that the currently authenticated user has participated in."
-  )
-  public List<EventDTO> getAllMyPastEvents() {
-
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
-    return eventService.findPastEventsByIdUser(idUser).stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
-  }
-
-  @GetMapping("/my/future")
-  @Operation(
-      summary = "Retrieve all future events the user is scheduled to participate in",
-      description = "Fetches a list of all future events that the currently authenticated user is scheduled to participate in."
-  )
-  public List<EventDTO> getAllMyFutureEvents() {
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
-    return eventService.findFutureEventsByIdUser(idUser).stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
-  }*/
-
 
   @GetMapping("/{idEvent}")
   @Operation(
@@ -162,21 +122,34 @@ public class EventController {
       summary = "Create a new event",
       description = "Creates a new event with the provided details."
   )
-  public EventDTO createMyEvent(
-      @Parameter(description = "Title,description,start time,end time, id of event,type of Location, Url for Image, id of city(location)") @RequestBody EventRequest eventRequest) {
-    /*//Todo:Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-     UUID idOrganizer = auth.getId(); */
-    //assumer yang yang is current user
-    UUID idOrganizer = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
-    return eventDTOMapper.apply(eventService.createEvent((eventRequest.getTitle()),
-        eventRequest.getDescription(),
-        eventRequest.getStartTime(),
-        eventRequest.getEndTime(),
-        eventRequest.getTypeEventId(),
-        eventRequest.getTypeLocation(),
-        eventRequest.getImage(),
-        eventRequest.getLocationId(),
-        idOrganizer));
+  public ResponseEntity<EventDTO> createMyEvent(
+      @RequestBody @Parameter(description = "The event request containing all necessary event details.") EventRequest eventRequest) {
+    try {
+      // 获取当前认证信息
+      String email = userService.getCurrentUserEmail();
+      UUID idOrganizer = userService.getIdUserByEmail(email);
+
+      // 创建新事件
+      EventDTO event = eventDTOMapper.apply(eventService.createEvent(
+          eventRequest.getTitle(),
+          eventRequest.getDescription(),
+          eventRequest.getStartTime(),
+          eventRequest.getEndTime(),
+          eventRequest.getTypeEventId(),
+          eventRequest.getTypeLocation(),
+          eventRequest.getImage(),
+          eventRequest.getLocationId(),
+          idOrganizer
+      ));
+
+      // 返回成功响应
+      return ResponseEntity.ok(event);
+    } catch (Exception e) {
+      // 记录错误日志
+      //logger.error("Failed to create event", e);
+      // 返回服务器内部错误响应
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 
   @PutMapping("/{idEvent}")
@@ -204,6 +177,19 @@ public class EventController {
   )
   public void deleteMyEvent(@Parameter(description = "id of event") @PathVariable UUID idEvent) {
     //Todo throw out exception when this event is not the current user organises
+    // 获取当前认证信息
+    String email = userService.getCurrentUserEmail();
+    // 获取事件信息，确保事件存在
+    Event event = eventService.findEventById(idEvent);
+    if (event == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+    }
+
+    // 检查当前用户是否是该事件的组织者
+    if (!event.getOrganizer().getEmail().equals(email)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+          "You are not authorized to delete this event");
+    }
     eventService.deleteEvent(idEvent);
   }
 
