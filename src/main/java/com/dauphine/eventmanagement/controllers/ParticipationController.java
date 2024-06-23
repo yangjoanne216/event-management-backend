@@ -4,6 +4,7 @@ import com.dauphine.eventmanagement.dto.UserDTO;
 import com.dauphine.eventmanagement.mapper.UserDTOMapper;
 import com.dauphine.eventmanagement.models.User;
 import com.dauphine.eventmanagement.services.ParticipationService;
+import com.dauphine.eventmanagement.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,11 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ParticipationController {
 
   private final ParticipationService participationService;
+  private final UserService userService;
   private final UserDTOMapper userDTOMapper;
 
   public ParticipationController(ParticipationService participationService,
-      UserDTOMapper userDTOMapper) {
+      UserService userService, UserDTOMapper userDTOMapper) {
     this.participationService = participationService;
+    this.userService = userService;
     this.userDTOMapper = userDTOMapper;
   }
 
@@ -43,9 +46,9 @@ public class ParticipationController {
   )
   public String participate(
       @Parameter(description = "id of event") @RequestParam UUID idEvent) {
-    //assumer yang yang is current user
-    //TODO：exception when already dans event
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    // 获取当前认证信息
+    String email = userService.getCurrentUserEmail();
+    UUID idUser = userService.getIdUserByEmail(email);
     participationService.participate(idUser, idEvent);
     return "Participation registered successfully.";
   }
@@ -57,8 +60,9 @@ public class ParticipationController {
   )
   public String cancelMyParticipation(
       @Parameter(description = "id of event") @RequestParam UUID id_event) {
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    //不能取消已经时间超过今天的event
+    String email = userService.getCurrentUserEmail();
+    UUID idUser = userService.getIdUserByEmail(email);
     participationService.cancelParticipation(idUser, id_event);
     return "Participation cancelled successfully.";
   }

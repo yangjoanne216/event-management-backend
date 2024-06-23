@@ -46,6 +46,7 @@ public class ParticipationServiceImpl implements ParticipationService {
     participation.setUser(user);
     participation.setId(idParticipation);
     participationRepository.save(participation);
+    participationRepository.flush();
 
   }
 

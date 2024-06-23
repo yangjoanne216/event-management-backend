@@ -47,4 +47,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
   @Query("SELECT e FROM Event e WHERE e.organizer.idUser = :idUser")
   List<Event> findEventsByIdOrganizer(@Param("idUser") UUID idUser);
+
+  Optional<Event> findByIdEvent(UUID eventId);
 }

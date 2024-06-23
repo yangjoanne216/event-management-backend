@@ -115,11 +115,6 @@ CREATE OR REPLACE FUNCTION check_feedback_date()
     RETURNS TRIGGER AS
 $$
 BEGIN
-    -- Check if feedback date is before today and after event start time
-    IF (NEW.date >= CURRENT_DATE) THEN
-        RAISE EXCEPTION 'Feedback date must be before today.';
-    END IF;
-
     -- Check if the feedback date is after the event's start time
     IF (NEW.date <= (SELECT start_time FROM event WHERE id_event = NEW.id_event)) THEN
         RAISE EXCEPTION 'Feedback date must be after the event start time.';
@@ -149,9 +144,6 @@ CREATE TRIGGER prevent_organizer_participation_trigger
 EXECUTE FUNCTION prevent_organizer_participation();
 
 
-/* AI in Healthcare Meetup - Yang YANG */
-INSERT INTO participation (id_event, id_user)
-VALUES ('a81e5b58-61d3-4427-bd17-2fd816a2a7e8', '58bdba14-9cec-4f39-bc27-43a01afef3ae');
+DROP TRIGGER IF EXISTS trg_check_feedback_date ON feedback CASCADE;
 
-select *
-from users
+

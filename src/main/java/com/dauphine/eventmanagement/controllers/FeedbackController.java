@@ -5,6 +5,7 @@ import com.dauphine.eventmanagement.dto.FeedbackRequest;
 import com.dauphine.eventmanagement.dto.FeedbackUpdateRequest;
 import com.dauphine.eventmanagement.mapper.FeedbackDTOMapper;
 import com.dauphine.eventmanagement.services.FeedbackService;
+import com.dauphine.eventmanagement.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -27,17 +28,22 @@ public class FeedbackController {
   private final FeedbackService feedbackService;
   private final FeedbackDTOMapper feedbackDTOMapper;
 
-  public FeedbackController(FeedbackService feedbackService, FeedbackDTOMapper feedbackDTOMapper) {
+  private final UserService userService;
+
+  public FeedbackController(FeedbackService feedbackService, FeedbackDTOMapper feedbackDTOMapper,
+      UserService userService) {
     this.feedbackService = feedbackService;
     this.feedbackDTOMapper = feedbackDTOMapper;
+    this.userService = userService;
   }
 
   @PostMapping
   @Operation(summary = "Create feedback", description = "Submits feedback for an event by a user.")
   public FeedbackDTO createFeedback(
       @RequestBody FeedbackRequest feedbackRequest) {
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    // 获取当前认证信息
+    String email = userService.getCurrentUserEmail();
+    UUID idUser = userService.getIdUserByEmail(email);
     return feedbackDTOMapper.apply(
         feedbackService.createFeedback(idUser, feedbackRequest.getIdEvent(),
             feedbackRequest.getContent(), feedbackRequest.getScore()));
@@ -48,8 +54,9 @@ public class FeedbackController {
   public FeedbackDTO updateFeedback(
       @PathVariable UUID idEvent,
       @RequestBody FeedbackUpdateRequest feedbackUpdateRequest) {
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    // 获取当前认证信息
+    String email = userService.getCurrentUserEmail();
+    UUID idUser = userService.getIdUserByEmail(email);
     return feedbackDTOMapper.apply(
         feedbackService.updateFeedback(idEvent, idUser, feedbackUpdateRequest.getContent(),
             feedbackUpdateRequest.getScore()));
@@ -60,8 +67,9 @@ public class FeedbackController {
   public void deleteFeedback(
       @PathVariable UUID idEvent
   ) {
-    //assumer yang yang is current user
-    UUID idUser = UUID.fromString("58bdba14-9cec-4f39-bc27-43a01afef3ae");
+    // 获取当前认证信息
+    String email = userService.getCurrentUserEmail();
+    UUID idUser = userService.getIdUserByEmail(email);
     feedbackService.deleteFeedback(idEvent, idUser);
   }
 

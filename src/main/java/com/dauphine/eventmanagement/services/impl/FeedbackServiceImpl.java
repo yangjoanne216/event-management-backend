@@ -8,6 +8,7 @@ import com.dauphine.eventmanagement.repositories.EventRepository;
 import com.dauphine.eventmanagement.repositories.FeedbackRepository;
 import com.dauphine.eventmanagement.repositories.UserRepository;
 import com.dauphine.eventmanagement.services.FeedbackService;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class FeedbackServiceImpl implements FeedbackService {
   public Feedback createFeedback(UUID idUser, UUID idEvent, String content, Integer score) {
     User user = userRepository.findById(idUser)
         .orElseThrow(() -> new RuntimeException("User not found with ID: " + idUser));
-    Event event = eventRepository.findById(idEvent)
+    Event event = eventRepository.findByIdEvent(idEvent)
         .orElseThrow(() -> new RuntimeException("Event not found with ID: " + idEvent));
     Feedback feedback = new Feedback();
     IdFeedback id = new IdFeedback(idEvent, idUser);
@@ -53,7 +54,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     Feedback feedback = feedbackRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Feedback not found for current user"));
 
-    Event event = eventRepository.findById(idEvent)
+    Event event = eventRepository.findByIdEvent(idEvent)
         .orElseThrow(() -> new RuntimeException("Event not found with ID: " + idEvent));
     User user = userRepository.findById(idUser)
         .orElseThrow(() -> new RuntimeException("User not found with ID: " + idUser));
@@ -74,6 +75,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 
   @Override
   public List<Feedback> getAllFeedbackByEventId(UUID eventId) {
-    return feedbackRepository.findByEvent_IdEvent(eventId);
+    Event event = eventRepository.findByIdEvent(eventId).orElseThrow(() ->
+        new EntityNotFoundException("Unable to find event id " + eventId)
+    );
+    return feedbackRepository.findByEvent(event);
   }
 }

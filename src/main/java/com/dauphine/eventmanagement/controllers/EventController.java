@@ -61,11 +61,10 @@ public class EventController {
 
   @GetMapping("/my")
   @Operation(
-      summary = "Retrieve all events the user participates in or organizes",
+      summary = "Current User: Retrieve all events the current user participates in or organizes",
       description = "Fetches a list of all events that the currently authenticated user participates in or organizes"
   )
   public List<EventDTO> getAllMyEvents() {
-    //Todo: get current user id et try to use particpationService to get all the event of the user participates in
     String email = userService.getCurrentUserEmail();
     return eventService.findAllMyEventsByUserEmail(email).stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
@@ -119,7 +118,7 @@ public class EventController {
 
   @PostMapping
   @Operation(
-      summary = "Create a new event",
+      summary = "Current user : create a new event",
       description = "Creates a new event with the provided details."
   )
   public ResponseEntity<EventDTO> createMyEvent(
