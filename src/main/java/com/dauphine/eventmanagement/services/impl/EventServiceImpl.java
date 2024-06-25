@@ -1,6 +1,13 @@
 package com.dauphine.eventmanagement.services.impl;
 
 import com.dauphine.eventmanagement.dto.SearchCriteria;
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.EventTypeNotFoundException;
+import com.dauphine.eventmanagement.exceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.LocationNotFoundException;
+import com.dauphine.eventmanagement.exceptions.UnauthorizedEventModificationException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.models.Location;
 import com.dauphine.eventmanagement.models.TypeEvent;
@@ -12,6 +19,7 @@ import com.dauphine.eventmanagement.repositories.ParticipationRepository;
 import com.dauphine.eventmanagement.repositories.TypeEventRepository;
 import com.dauphine.eventmanagement.repositories.UserRepository;
 import com.dauphine.eventmanagement.services.EventService;
+import com.dauphine.eventmanagement.services.UserService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -38,14 +46,18 @@ public class EventServiceImpl implements EventService {
 
   private final ParticipationRepository participationRepository;
 
+  private final UserService userService;
+
   public EventServiceImpl(EventRepository eventRepository,
       TypeEventRepository typeEventRepository, LocationRepository locationRepository,
-      UserRepository userRepository, ParticipationRepository participationRepository) {
+      UserRepository userRepository, ParticipationRepository participationRepository,
+      UserService userService) {
     this.eventRepository = eventRepository;
     this.typeEventRepository = typeEventRepository;
     this.locationRepository = locationRepository;
     this.userRepository = userRepository;
     this.participationRepository = participationRepository;
+    this.userService = userService;
   }
 
   @Override
@@ -59,82 +71,117 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public Event findEventById(UUID idEvent) {
-    return eventRepository.findByIdEventOrderByStartTimeDesc(idEvent).orElse(null);
+  public Event findEventById(UUID idEvent) throws EventNotFoundException {
+    return eventRepository.findByIdEventOrderByStartTimeDesc(idEvent)
+        .orElseThrow(() -> new EventNotFoundException(idEvent));
   }
 
   @Override
-  public Event createEvent(String title, String description, LocalDateTime startTime,
+  public Event createMyEvent(String title, String description, LocalDateTime startTime,
       LocalDateTime endTime, UUID idTypeEvent, String typeLocation, String image,
-      UUID idLocation, UUID idOrganizer) {
+      UUID idLocation, UUID idOrganizer)
+      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException {
+    if (startTime.isBefore(LocalDateTime.now())) {
+      throw new EventTimePastException();
+    }
+    if (endTime.isBefore(startTime)) {
+      throw new InvalidDateException();
+    }
+    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
+        .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));
+    Location location = locationRepository.findById(idLocation)
+        .orElseThrow(() -> new LocationNotFoundException(idLocation));
+    User user = userRepository.findById(idOrganizer)
+        .orElseThrow(() -> new UserNotFoundException(idOrganizer));
+
     Event event = new Event();
     event.setTitle(title);
     event.setDescription(description);
     event.setStartTime(startTime);
     event.setEndTime(endTime);
-    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent).orElse(null);
     event.setTypeEvent(typeEvent);
-
     event.setTypeLocation(TypeLocation.valueOf(typeLocation));
     event.setImage(image);
-
-    Location location = locationRepository.findById(idLocation).orElse(null);
     event.setLocation(location);
-
-    User user = userRepository.findById(idOrganizer).orElse(null);
     event.setOrganizer(user);
     return eventRepository.save(event);
   }
 
   @Override
-  public Event updateEvent(UUID idEvent, String title, String description,
+  public Event updateMyEvent(UUID idEvent, String title, String description,
       LocalDateTime startTime, LocalDateTime endTime, UUID idTypeEvent, String typeLocation,
-      String image, UUID idLocation) {
-    Event event = eventRepository.findById(idEvent).orElse(null);
-    if (event != null) {
-      event.setTitle(title);
-      event.setDescription(description);
-      event.setStartTime(startTime);
-      event.setEndTime(endTime);
-      TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent).orElse(null);
-      event.setTypeEvent(typeEvent);
-      TypeLocation typeLocation2 = TypeLocation.valueOf(typeLocation);
-      event.setTypeLocation(typeLocation2);
-      event.setImage(image);
-
-      Location location = locationRepository.findById(idLocation).orElse(null);
-      event.setLocation(location);
-
-      return eventRepository.save(event);
+      String image, UUID idLocation)
+      throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException {
+    Event event = eventRepository.findById(idEvent)
+        .orElseThrow(() -> new EventNotFoundException(idEvent));
+    //get current user information
+    String email = userService.getCurrentUserEmail();
+    // check current user is organizer or not
+    if (!event.getOrganizer().getEmail().equals(email)) {
+      throw new UnauthorizedEventModificationException(
+          "You are not authorized to modify this event. Only the event organizer can make changes.");
     }
-    return null;
+    if (startTime.isBefore(LocalDateTime.now())) {
+      throw new EventTimePastException();
+    }
+    if (endTime.isBefore(startTime)) {
+      throw new InvalidDateException();
+    }
+    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
+        .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));
+    Location location = locationRepository.findById(idLocation)
+        .orElseThrow(() -> new LocationNotFoundException(idLocation));
+
+    event.setTitle(title);
+    event.setDescription(description);
+    event.setStartTime(startTime);
+    event.setEndTime(endTime);
+    event.setTypeEvent(typeEvent);
+    TypeLocation typeLocation2 = TypeLocation.valueOf(typeLocation);
+    event.setTypeLocation(typeLocation2);
+    event.setImage(image);
+    event.setLocation(location);
+
+    return eventRepository.save(event);
+
+
   }
 
   @Override
-  public void deleteEvent(UUID idEvent) {
+  public void deleteMyEvent(UUID idEvent)
+      throws EventNotFoundException, UnauthorizedEventModificationException {
+    // check event is null or not
+    Event event = eventRepository.findById(idEvent)
+        .orElseThrow(() -> new EventNotFoundException(idEvent));
+    // check event is in the pas or not
+    if (event.getStartTime().isBefore(LocalDateTime.now())) {
+      throw new UnauthorizedEventModificationException("Cannot delete past events.");
+    }
+    //get current user information
+    String email = userService.getCurrentUserEmail();
+    // check current user is organizer or not
+    if (!event.getOrganizer().getEmail().equals(email)) {
+      throw new UnauthorizedEventModificationException(
+          "You are not authorized to modify this event. Only the event organizer can make changes.");
+    }
+
     eventRepository.deleteById(idEvent);
   }
 
   @Override
-  public List<Event> findEventsByTypeId(UUID idTypeEvent) {
-    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent).orElse(null);
+  public List<Event> findEventsByTypeId(UUID idTypeEvent) throws EventTypeNotFoundException {
+    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
+        .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));
     return eventRepository.findAllByTypeEventOrderByStartTimeDesc(typeEvent);
   }
 
   @Override
-  public List<Event> findEventsByType(UUID idTypeEvent) {
-    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent).orElse(null);
-    return eventRepository.findAllByTypeEventOrderByStartTimeDesc(typeEvent);
-  }
-
-  @Override
-  public List<Event> findEventsByDateRange(LocalDateTime start, LocalDateTime end) {
+  public List<Event> findEventsByDateRange(LocalDateTime start, LocalDateTime end)
+      throws InvalidDateException {
+    if (end.isBefore(start)) {
+      throw new InvalidDateException();
+    }
     return eventRepository.findByDateRangeOrderByStartTime(start, end);
-  }
-
-  @Override
-  public List<Event> findEventsByIdUser(UUID idUser) {
-    return participationRepository.findEventsByIdIdUser(idUser);
   }
 
   @Override
@@ -145,7 +192,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<Event> findAllMyEventsByUserEmail(String email) {
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+        .orElseThrow(() -> new UserNotFoundException(email));
     List<Event> organizedEvents = eventRepository.findEventsByIdOrganizer(user.getIdUser());
     List<Event> participatedEvents = participationRepository.findEventsByIdIdUser(user.getIdUser());
     return Stream.concat(organizedEvents.stream(), participatedEvents.stream())
@@ -154,18 +201,14 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public List<Event> findAllEventsOrderedByStartTimeDesc() {
-    return eventRepository.findAllByOrderByStartTimeDesc();
-  }
-
-  @Override
   public List<Event> findAllEventsOrderedByScore() {
     return eventRepository.findAllByOrderByScore();
   }
 
   @Override
-  public List<Event> findEventsByLocationId(UUID idCity) {
-    Location location = locationRepository.findById(idCity).orElse(null);
+  public List<Event> findEventsByLocationId(UUID idCity) throws LocationNotFoundException {
+    Location location = locationRepository.findById(idCity)
+        .orElseThrow(() -> new LocationNotFoundException(idCity));
     return eventRepository.findAllByLocationOrderByStartTimeDesc(location);
   }
 
@@ -173,7 +216,7 @@ public class EventServiceImpl implements EventService {
   public List<Event> searchEvents(SearchCriteria criteria) {
     Specification<Event> spec = new EventSpecification(criteria);
     Sort sort = Sort.by(
-        criteria.getOrderBy().equals("score") ? Sort.Direction.DESC : Sort.Direction.ASC,
+        Sort.Direction.DESC,
         criteria.getOrderBy().equals("score") ? "score" : "startTime");
     return eventRepository.findAll(spec, sort);
   }
@@ -210,5 +253,8 @@ public class EventServiceImpl implements EventService {
   }
 
 }
+
+
+
 
 

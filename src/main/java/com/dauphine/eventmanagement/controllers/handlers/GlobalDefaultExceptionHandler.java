@@ -1,0 +1,77 @@
+package com.dauphine.eventmanagement.controllers.handlers;
+
+
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.EventTypeNotFoundException;
+import com.dauphine.eventmanagement.exceptions.IncorrectPasswordException;
+import com.dauphine.eventmanagement.exceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.InvalidEventTypeException;
+import com.dauphine.eventmanagement.exceptions.InvalidLocationTypeException;
+import com.dauphine.eventmanagement.exceptions.LocationNotFoundException;
+import com.dauphine.eventmanagement.exceptions.UnauthorizedEventModificationException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+
+@ControllerAdvice
+public class GlobalDefaultExceptionHandler {
+
+  private static final Logger logger = LoggerFactory.getLogger(GlobalDefaultExceptionHandler.class);
+
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex,
+      WebRequest request) {
+    logger.error("User not found: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+  }
+
+  @ExceptionHandler({
+      EventTypeNotFoundException.class,
+      LocationNotFoundException.class,
+      EventNotFoundException.class
+  })
+  public ResponseEntity<String> handleNotFoundException(RuntimeException ex) {
+    logger.error("Resource not found: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+  }
+
+  @ExceptionHandler({
+      InvalidDateException.class,
+      InvalidEventTypeException.class,
+      InvalidLocationTypeException.class
+  })
+  public ResponseEntity<String> handleBadRequestException(RuntimeException ex, WebRequest request) {
+    logger.error("Bad request: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  }
+
+  @ExceptionHandler({
+      UnauthorizedEventModificationException.class,
+      IncorrectPasswordException.class
+  })
+  public ResponseEntity<String> handleUnauthorizedException(
+      UnauthorizedEventModificationException ex, WebRequest request) {
+    logger.error("Unauthorized: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(EventTimePastException.class)
+  public ResponseEntity<String> handleForbiddenException(EventTimePastException ex,
+      WebRequest request) {
+    logger.error("Operation forbidden on past event: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<String> handleGeneralException(Exception ex, WebRequest request) {
+    logger.error("An error occurred: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body("An unexpected error occurred: " + ex.getMessage());
+  }
+}

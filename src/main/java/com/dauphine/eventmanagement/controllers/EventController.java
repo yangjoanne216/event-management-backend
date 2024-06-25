@@ -3,6 +3,13 @@ package com.dauphine.eventmanagement.controllers;
 import com.dauphine.eventmanagement.dto.EventDTO;
 import com.dauphine.eventmanagement.dto.EventRequest;
 import com.dauphine.eventmanagement.dto.SearchCriteria;
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.EventTypeNotFoundException;
+import com.dauphine.eventmanagement.exceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.LocationNotFoundException;
+import com.dauphine.eventmanagement.exceptions.UnauthorizedEventModificationException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.mapper.EventDTOMapper;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.services.EventService;
@@ -16,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/v1/events")
@@ -53,12 +58,14 @@ public class EventController {
       summary = "Get all events",
       description = "Retrieves a list of all events or filtered by title if provided."
   )
-  public List<EventDTO> getAllEvents(
+  public ResponseEntity<List<EventDTO>> getAllEvents(
       @Parameter(description = "Optional search string to filter event by title. If omitted, all events are returned.") @RequestParam(required = false) String title) {
     List<Event> events = title == null || title.isBlank()
         ? eventService.findAllEvents()
         : eventService.getAllLikeTitle(title);
-    return events.stream().map(eventDTOMapper::apply).collect(Collectors.toList());
+    List<EventDTO> eventDTOS = events.stream().map(eventDTOMapper::apply)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(eventDTOS);
   }
 
   @GetMapping("/my")
@@ -66,10 +73,13 @@ public class EventController {
       summary = "Current User: Retrieve all events the current user participates in or organizes",
       description = "Fetches a list of all events that the currently authenticated user participates in or organizes"
   )
-  public List<EventDTO> getAllMyEvents() {
+  public ResponseEntity<List<EventDTO>> getAllMyEvents() {
     String email = userService.getCurrentUserEmail();
-    return eventService.findAllMyEventsByUserEmail(email).stream().map(eventDTOMapper::apply)
+    List<EventDTO> eventDTOS = eventService.findAllMyEventsByUserEmail(email).stream()
+        .map(eventDTOMapper::apply)
         .collect(Collectors.toList());
+    return ResponseEntity.ok(eventDTOS);
+
   }
 
   @GetMapping("/{idEvent}")
@@ -77,20 +87,22 @@ public class EventController {
       summary = "Get an event by its ID",
       description = "Fetches a single event by its unique identifier."
   )
-  public EventDTO getEventByID(@Parameter(description = "id of event") @PathVariable UUID idEvent) {
+  public EventDTO getEventByID(@Parameter(description = "id of event") @PathVariable UUID idEvent)
+      throws EventNotFoundException {
     return eventDTOMapper.apply(eventService.findEventById(idEvent));
   }
 
-  //Todo : change the url : /v1/events/type/{idTypeEvent} to /v1/types/{idTypeEvent}/events
   @GetMapping("/type/{idTypeEvent}")
   @Operation(
       summary = "Get events by type ID",
       description = "Fetches all events that match a particular type ID."
   )
-  public List<EventDTO> getEventsByTypeId(
-      @Parameter(description = "id of event's type") @PathVariable UUID idTypeEvent) {
-    return eventService.findEventsByTypeId(idTypeEvent).stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
+  public ResponseEntity<List<EventDTO>> getEventsByTypeId(
+      @Parameter(description = "id of event's type") @PathVariable UUID idTypeEvent)
+      throws EventNotFoundException {
+    return ResponseEntity.ok(
+        eventService.findEventsByTypeId(idTypeEvent).stream().map(eventDTOMapper::apply)
+            .collect(Collectors.toList()));
   }
 
   @GetMapping("/date")
@@ -99,11 +111,13 @@ public class EventController {
       description = "Fetches all events occurring within a specified start and end date."
   )
 
-  public List<EventDTO> getEventsByDateRange(
-      @Parameter(description = "Start time of search") @RequestParam LocalDateTime searchStart,
-      @Parameter(description = "End time of search") @RequestParam LocalDateTime searchEnd) {
-    return eventService.findEventsByDateRange(searchStart, searchEnd).stream()
+  public ResponseEntity<List<EventDTO>> getEventsByDateRange(
+      @Parameter(description = "Start time of search") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime searchStart,
+      @Parameter(description = "End time of search") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime searchEnd)
+      throws InvalidDateException {
+    List<EventDTO> eventDTOS = eventService.findEventsByDateRange(searchStart, searchEnd).stream()
         .map(eventDTOMapper::apply).collect(Collectors.toList());
+    return ResponseEntity.ok(eventDTOS);
   }
 
   @GetMapping("/location/{idCity}")
@@ -111,10 +125,12 @@ public class EventController {
       summary = "Get events by location ID",
       description = "Fetches all events associated with a specific location ID."
   )
-  public List<EventDTO> getEventsByLocationId(
-      @Parameter(description = "id of city") @PathVariable UUID idCity) {
-    return eventService.findEventsByLocationId(idCity).stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
+  public ResponseEntity<List<EventDTO>> getEventsByLocationId(
+      @Parameter(description = "id of city") @PathVariable UUID idCity)
+      throws LocationNotFoundException {
+    return ResponseEntity.ok(
+        eventService.findEventsByLocationId(idCity).stream().map(eventDTOMapper::apply)
+            .collect(Collectors.toList()));
   }
 
 
@@ -124,43 +140,11 @@ public class EventController {
       description = "Creates a new event with the provided details."
   )
   public ResponseEntity<EventDTO> createMyEvent(
-      @RequestBody @Parameter(description = "The event request containing all necessary event details.") EventRequest eventRequest) {
-    try {
-      // 获取当前认证信息
-      String email = userService.getCurrentUserEmail();
-      UUID idOrganizer = userService.getIdUserByEmail(email);
-
-      // 创建新事件
-      EventDTO event = eventDTOMapper.apply(eventService.createEvent(
-          eventRequest.getTitle(),
-          eventRequest.getDescription(),
-          eventRequest.getStartTime(),
-          eventRequest.getEndTime(),
-          eventRequest.getTypeEventId(),
-          eventRequest.getTypeLocation(),
-          eventRequest.getImage(),
-          eventRequest.getLocationId(),
-          idOrganizer
-      ));
-
-      // 返回成功响应
-      return ResponseEntity.ok(event);
-    } catch (Exception e) {
-      // 记录错误日志
-      //logger.error("Failed to create event", e);
-      // 返回服务器内部错误响应
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-  }
-
-  @PutMapping("/{idEvent}")
-  @Operation(
-      summary = "Update an existing event",
-      description = "Updates an event identified by its ID with new details."
-  )
-  public EventDTO updateEventId(@Parameter(description = "id of event") @PathVariable UUID idEvent,
-      @Parameter(description = "Title,description,start time,end time, id of event,type of Location, Url for Image, id of city(location)") @RequestBody EventRequest eventRequest) {
-    return eventDTOMapper.apply(eventService.updateEvent(idEvent,
+      @RequestBody @Parameter(description = "The event request containing all necessary event details.") EventRequest eventRequest)
+      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException {
+    String email = userService.getCurrentUserEmail();
+    UUID idOrganizer = userService.getIdUserByEmail(email);
+    EventDTO event = eventDTOMapper.apply(eventService.createMyEvent(
         eventRequest.getTitle(),
         eventRequest.getDescription(),
         eventRequest.getStartTime(),
@@ -168,7 +152,30 @@ public class EventController {
         eventRequest.getTypeEventId(),
         eventRequest.getTypeLocation(),
         eventRequest.getImage(),
-        eventRequest.getLocationId()));
+        eventRequest.getLocationId(),
+        idOrganizer
+    ));
+    return ResponseEntity.ok(event);
+  }
+
+  @PutMapping("/{idEvent}")
+  @Operation(
+      summary = "Update an existing event",
+      description = "Updates an event identified by its ID with new details."
+  )
+  public ResponseEntity<EventDTO> updateMyEvent(
+      @Parameter(description = "id of event") @PathVariable UUID idEvent,
+      @Parameter(description = "Title,description,start time,end time, id of event,type of Location, Url for Image, id of city(location)") @RequestBody EventRequest eventRequest)
+      throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException {
+    return ResponseEntity.ok(eventDTOMapper.apply(eventService.updateMyEvent(idEvent,
+        eventRequest.getTitle(),
+        eventRequest.getDescription(),
+        eventRequest.getStartTime(),
+        eventRequest.getEndTime(),
+        eventRequest.getTypeEventId(),
+        eventRequest.getTypeLocation(),
+        eventRequest.getImage(),
+        eventRequest.getLocationId())));
   }
 
   @DeleteMapping("/{idEvent}")
@@ -176,22 +183,11 @@ public class EventController {
       summary = "Delete an event",
       description = "Deletes an event based on its ID,but only the event witch is organised bu current user can be deleted"
   )
-  public void deleteMyEvent(@Parameter(description = "id of event") @PathVariable UUID idEvent) {
-    //Todo throw out exception when this event is not the current user organises
-    // 获取当前认证信息
-    String email = userService.getCurrentUserEmail();
-    // 获取事件信息，确保事件存在
-    Event event = eventService.findEventById(idEvent);
-    if (event == null) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
-    }
-
-    // 检查当前用户是否是该事件的组织者
-    if (!event.getOrganizer().getEmail().equals(email)) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-          "You are not authorized to delete this event");
-    }
-    eventService.deleteEvent(idEvent);
+  public ResponseEntity<Void> deleteMyEvent(
+      @Parameter(description = "id of event") @PathVariable UUID idEvent)
+      throws EventNotFoundException, UnauthorizedEventModificationException {
+    eventService.deleteMyEvent(idEvent);
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping("/sortedByStartTimeAsc")
@@ -199,22 +195,25 @@ public class EventController {
       summary = "Order events by start time old to new",
       description = "Fetches all events ordered by their start times."
   )
-  public List<EventDTO> orderEventsByStartTime() {
-    return eventService.findAllEventsOrderedByStartTime().stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
+  public ResponseEntity<List<EventDTO>> orderEventsByStartTimeAsc() {
+    return ResponseEntity.ok(
+        eventService.findAllEventsOrderedByStartTime().stream().map(eventDTOMapper::apply)
+            .collect(Collectors.toList()));
   }
 
 
   @GetMapping("/sortedByScore")
   @Operation(
-      summary = "Order events by moyen note of event",
+      summary = "Order events by moyen note of event(Desc) ",
       description = "Fetches all events ordered by their moyen note."
   )
-  public List<EventDTO> orderEventsByScore() {
-    return eventService.findAllEventsOrderedByScore().stream().map(eventDTOMapper::apply)
-        .collect(Collectors.toList());
+  public ResponseEntity<List<EventDTO>> orderEventsByScoreDesc() {
+    return ResponseEntity.ok(
+        eventService.findAllEventsOrderedByScore().stream().map(eventDTOMapper::apply)
+            .collect(Collectors.toList()));
   }
 
+  /*orderBy：date date*/
   @GetMapping("/search")
   public ResponseEntity<List<EventDTO>> searchEvents(@RequestParam List<String> eventTypes,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,

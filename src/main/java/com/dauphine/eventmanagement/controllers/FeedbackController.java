@@ -37,6 +37,14 @@ public class FeedbackController {
     this.userService = userService;
   }
 
+  @GetMapping("/event/{idEvent}")
+  @Operation(summary = "Get all feedback for an event", description = "Retrieves all feedback entries submitted for a specific event.")
+  public List<FeedbackDTO> getAllFeedbackForEvent(
+      @PathVariable UUID idEvent) {
+    return feedbackService.getAllFeedbackByEventId(idEvent).stream().map(feedbackDTOMapper::apply)
+        .collect(Collectors.toList());
+  }
+
   @PostMapping
   @Operation(summary = "Create feedback", description = "Submits feedback for an event by a user.")
   public FeedbackDTO createFeedback(
@@ -73,11 +81,5 @@ public class FeedbackController {
     feedbackService.deleteFeedback(idEvent, idUser);
   }
 
-  @GetMapping("/event/{idEvent}")
-  @Operation(summary = "Get all feedback for an event", description = "Retrieves all feedback entries submitted for a specific event.")
-  public List<FeedbackDTO> getAllFeedbackForEvent(
-      @PathVariable UUID idEvent) {
-    return feedbackService.getAllFeedbackByEventId(idEvent).stream().map(feedbackDTOMapper::apply)
-        .collect(Collectors.toList());
-  }
+
 }

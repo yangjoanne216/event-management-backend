@@ -1,6 +1,13 @@
 package com.dauphine.eventmanagement.services;
 
 import com.dauphine.eventmanagement.dto.SearchCriteria;
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.EventTypeNotFoundException;
+import com.dauphine.eventmanagement.exceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.LocationNotFoundException;
+import com.dauphine.eventmanagement.exceptions.UnauthorizedEventModificationException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.models.Event;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,40 +15,35 @@ import java.util.UUID;
 
 public interface EventService {
 
-  public List<Event> findAllEvents();
+  List<Event> findAllEvents();
 
   List<Event> getAllLikeTitle(String title);
 
-  /*public List<Event> findPastEvents();
+  Event findEventById(UUID id_event) throws EventNotFoundException;
 
-  public List<Event> findFutureEvents();*/
-
-  public Event findEventById(UUID id_event);
-
-  public Event createEvent(String title, String description, LocalDateTime start_time,
+  Event createMyEvent(String title, String description, LocalDateTime start_time,
       LocalDateTime end_time, UUID typeEventId, String typeLocation, String image,
-      UUID id_city, UUID id_organizer);
+      UUID id_city, UUID id_organizer)
+      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException;
 
-  public Event updateEvent(UUID id_event, String title, String description,
+  Event updateMyEvent(UUID id_event, String title, String description,
       LocalDateTime start_time, LocalDateTime end_time, UUID typeEventId, String typeLocation,
       String image,
-      UUID locationId);
+      UUID locationId)
+      throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException;
 
-  public void deleteEvent(UUID id_event);
+  void deleteMyEvent(UUID id_event)
+      throws EventNotFoundException, UnauthorizedEventModificationException;
 
-  public List<Event> findEventsByTypeId(UUID id_type_event);
+  List<Event> findEventsByTypeId(UUID id_type_event) throws EventTypeNotFoundException;
 
-  public List<Event> findEventsByDateRange(LocalDateTime start, LocalDateTime end);
+  List<Event> findEventsByDateRange(LocalDateTime start, LocalDateTime end)
+      throws InvalidDateException;
 
-  public List<Event> findAllEventsOrderedByScore();
+  List<Event> findAllEventsOrderedByScore();
 
-  public List<Event> findEventsByLocationId(UUID id_city);
+  List<Event> findEventsByLocationId(UUID id_city) throws LocationNotFoundException;
 
-  List<Event> findEventsByType(UUID id_type_event);
-
-  List<Event> findAllEventsOrderedByStartTimeDesc();
-
-  List<Event> findEventsByIdUser(UUID idUser);
 
   List<Event> findAllEventsOrderedByStartTime();
 
@@ -49,7 +51,4 @@ public interface EventService {
 
   List<Event> searchEvents(SearchCriteria criteria);
 
-  //List<Event> findPastEventsByIdUser(UUID idUser);
-
-  //List<Event> findFutureEventsByIdUser(UUID idUser);
 }
