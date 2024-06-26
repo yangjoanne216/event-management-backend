@@ -8,21 +8,54 @@ e1aa51f7-6df6-4637-862e-15bf2fdc62a3,email4,$2a$10$2nFL.llRMqPB0md4LktsFeMUvxFcE
 /*Attention : password is password1 for email1, password2 for email2*/
 
 /*Type Event*/
-INSERT INTO type_event (id_type, name)
-VALUES ('f7fa6aba-8d66-4199-b900-ffbe0c7f0eed', 'Conference');
-INSERT INTO type_event (id_type, name)
-VALUES ('ed1ed0f6-1980-4734-9981-7f9d0bc1c8b8', 'Workshop');
-INSERT INTO type_event (id_type, name)
-VALUES ('56307841-2b00-4f1f-bd1f-3ff17570ccb7', 'Meetup');
+INSERT INTO type_event (name)
+VALUES ('Conference');
+INSERT INTO type_event (name)
+VALUES ('Workshop');
+INSERT INTO type_event (name)
+VALUES ('Meetup');
 
 /*Location*/
-INSERT INTO location (id_city, name)
-VALUES ('567fc524-2ba3-4430-95de-a37e923c7f81', 'Strasbourg');
-INSERT INTO location (id_city, name)
-VALUES ('98f2de8b-7938-4751-97f1-b5a29cd5b03b', 'Grenoble');
-INSERT INTO location (id_city, name)
-VALUES ('efb63b10-266d-4172-9b38-16866f4144be', 'Paris');
-
+INSERT INTO location (name)
+VALUES ('Lyon');
+INSERT INTO location (name)
+VALUES ('Marseille');
+INSERT INTO location (name)
+VALUES ('Toulouse');
+INSERT INTO location (name)
+VALUES ('Nice');
+INSERT INTO location (name)
+VALUES ('Nantes');
+INSERT INTO location (name)
+VALUES ('Montpellier');
+INSERT INTO location (name)
+VALUES ('Bordeaux');
+INSERT INTO location (name)
+VALUES ('Lille');
+INSERT INTO location (name)
+VALUES ('Rennes');
+INSERT INTO location (name)
+VALUES ('Reims');
+INSERT INTO location (name)
+VALUES ('Le Havre');
+INSERT INTO location (name)
+VALUES ('Saint-Étienne');
+INSERT INTO location (name)
+VALUES ('Toulon');
+INSERT INTO location (name)
+VALUES ('Angers');
+INSERT INTO location (name)
+VALUES ('Dijon');
+INSERT INTO location (name)
+VALUES ('Nîmes');
+INSERT INTO location (name)
+VALUES ('Aix-en-Provence');
+INSERT INTO location (name)
+VALUES ('Brest');
+INSERT INTO location (name)
+VALUES ('Le Mans');
+INSERT INTO location (name)
+VALUES ('Amiens');
 ------------------------------------------------------------
 /*Event*/
 
