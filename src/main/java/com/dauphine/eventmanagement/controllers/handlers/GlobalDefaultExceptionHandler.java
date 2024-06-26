@@ -6,6 +6,7 @@ import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastExce
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTypeNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidDateException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidEventTypeException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidLocationException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidLocationTypeException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.LocationNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.UnauthorizedEventModificationException;
@@ -41,6 +42,7 @@ public class GlobalDefaultExceptionHandler {
       EventTypeNotFoundException.class,
       LocationNotFoundException.class,
       EventNotFoundException.class
+
   })
   public ResponseEntity<String> handleNotFoundException(RuntimeException ex) {
     logger.error("Resource not found: {}", ex.getMessage());
@@ -53,7 +55,8 @@ public class GlobalDefaultExceptionHandler {
       InvalidLocationTypeException.class,
       FeedbackForFutureEventException.class,
       NotParticipantException.class,
-      SelfOrganizedEventException.class
+      SelfOrganizedEventException.class,
+      InvalidLocationException.class
   })
   public ResponseEntity<String> handleBadRequestException(RuntimeException ex, WebRequest request) {
     logger.error("Bad request: {}", ex.getMessage());

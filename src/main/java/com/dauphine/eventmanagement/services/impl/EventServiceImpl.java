@@ -5,6 +5,7 @@ import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundExce
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTypeNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidLocationException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.LocationNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.UnauthorizedEventModificationException;
 import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
@@ -72,7 +73,7 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public Event findEventById(UUID idEvent) throws EventNotFoundException {
-    return eventRepository.findByIdEventOrderByStartTimeDesc(idEvent)
+    return eventRepository.findByIdEvent(idEvent)
         .orElseThrow(() -> new EventNotFoundException(idEvent));
   }
 
@@ -80,7 +81,7 @@ public class EventServiceImpl implements EventService {
   public Event createMyEvent(String title, String description, LocalDateTime startTime,
       LocalDateTime endTime, UUID idTypeEvent, String typeLocation, String image,
       UUID idLocation, UUID idOrganizer)
-      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException {
+      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException, InvalidLocationException {
     if (startTime.isBefore(LocalDateTime.now())) {
       throw new EventTimePastException();
     }
@@ -89,8 +90,21 @@ public class EventServiceImpl implements EventService {
     }
     TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
         .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));
-    Location location = locationRepository.findById(idLocation)
-        .orElseThrow(() -> new LocationNotFoundException(idLocation));
+
+    Location location = null;
+    if ("ONLINE".equals(typeLocation)) {
+      if (idLocation != null) {
+        throw new InvalidLocationException();
+      }
+    } else {
+      if (idLocation == null) {
+        throw new InvalidLocationException();
+      }
+      location = locationRepository.findById(idLocation)
+          .orElseThrow(
+              () -> new LocationNotFoundException(idLocation));
+    }
+
     User user = userRepository.findById(idOrganizer)
         .orElseThrow(() -> new UserNotFoundException(idOrganizer));
 
@@ -113,7 +127,7 @@ public class EventServiceImpl implements EventService {
       String image, UUID idLocation)
       throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException {
     //Event not found Exception
-    Event event = eventRepository.findById(idEvent)
+    Event event = eventRepository.findByIdEvent(idEvent)
         .orElseThrow(() -> new EventNotFoundException(idEvent));
     //get current user information
     String email = userService.getCurrentUserEmail();
@@ -128,6 +142,16 @@ public class EventServiceImpl implements EventService {
     }
     if (endTime.isBefore(startTime)) {
       throw new InvalidDateException();
+    }
+    //check Location
+    if ("ONLINE".equals(typeLocation)) {
+      if (idLocation != null) {
+        throw new InvalidLocationException();
+      }
+    } else {
+      if (idLocation == null) {
+        throw new InvalidLocationException();
+      }
     }
     TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
         .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));

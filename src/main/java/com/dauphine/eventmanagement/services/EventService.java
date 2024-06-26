@@ -5,6 +5,7 @@ import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundExce
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTypeNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidLocationException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.LocationNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.UnauthorizedEventModificationException;
 import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
@@ -24,7 +25,7 @@ public interface EventService {
   Event createMyEvent(String title, String description, LocalDateTime start_time,
       LocalDateTime end_time, UUID typeEventId, String typeLocation, String image,
       UUID id_city, UUID id_organizer)
-      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException;
+      throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException, InvalidLocationException;
 
   Event updateMyEvent(UUID id_event, String title, String description,
       LocalDateTime start_time, LocalDateTime end_time, UUID typeEventId, String typeLocation,
