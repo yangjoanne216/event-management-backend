@@ -1,8 +1,8 @@
 package com.dauphine.eventmanagement.controllers;
 
 import com.dauphine.eventmanagement.dto.UserDTO;
-import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
-import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastException;
 import com.dauphine.eventmanagement.exceptions.participationExceptions.NotParticipantException;
 import com.dauphine.eventmanagement.mapper.UserDTOMapper;
 import com.dauphine.eventmanagement.models.User;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-//Todo: add endpoints for admin role
 @RestController
 @RequestMapping("/v1/participation")
 @Tag(

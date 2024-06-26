@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
 
-//Todo create Dto for user
 @Entity
 @Table(name = "users")
 public class User {
@@ -29,11 +28,8 @@ public class User {
   @Column(nullable = false)
   private String firstname;
 
-  // Assume Avatar is stored as a URL or a reference to a file system/storage service
   private String avatar;
 
-  /*@OneToMany(mappedBy = "user")
-  private List<Participation> participations;*/
 
   public User(UUID idUser) {
     this.idUser = idUser;
@@ -91,12 +87,6 @@ public class User {
   public void setAvatar(String avatar) {
     this.avatar = avatar;
   }
-
-  /*public List<Event> getEvents() {
-    return participations.stream()
-        .map(Participation::getEvent)
-        .collect(Collectors.toList());
-  }*/
 
 
 }

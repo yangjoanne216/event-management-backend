@@ -1,11 +1,11 @@
 package com.dauphine.eventmanagement.services.impl;
 
-import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
-import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundException;
 import com.dauphine.eventmanagement.exceptions.feedbackExceptions.FeedbackAlreadyExistsException;
 import com.dauphine.eventmanagement.exceptions.feedbackExceptions.FeedbackForFutureEventException;
 import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackAccessException;
 import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackDeletionException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.models.Feedback;
 import com.dauphine.eventmanagement.models.IdFeedback;

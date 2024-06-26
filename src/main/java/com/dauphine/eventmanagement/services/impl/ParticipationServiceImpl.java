@@ -1,10 +1,10 @@
 package com.dauphine.eventmanagement.services.impl;
 
-import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
-import com.dauphine.eventmanagement.exceptions.EventTimePastException;
-import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastException;
 import com.dauphine.eventmanagement.exceptions.participationExceptions.NotParticipantException;
 import com.dauphine.eventmanagement.exceptions.participationExceptions.SelfOrganizedEventException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.models.IdParticipation;
 import com.dauphine.eventmanagement.models.Participation;

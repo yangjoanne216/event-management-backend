@@ -1,13 +1,13 @@
 package com.dauphine.eventmanagement.services;
 
 import com.dauphine.eventmanagement.dto.SearchCriteria;
-import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
-import com.dauphine.eventmanagement.exceptions.EventTimePastException;
-import com.dauphine.eventmanagement.exceptions.EventTypeNotFoundException;
-import com.dauphine.eventmanagement.exceptions.InvalidDateException;
-import com.dauphine.eventmanagement.exceptions.LocationNotFoundException;
-import com.dauphine.eventmanagement.exceptions.UnauthorizedEventModificationException;
-import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTypeNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.InvalidDateException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.LocationNotFoundException;
+import com.dauphine.eventmanagement.exceptions.eventExceptions.UnauthorizedEventModificationException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.models.Event;
 import java.time.LocalDateTime;
 import java.util.List;

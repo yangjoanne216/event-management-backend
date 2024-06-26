@@ -3,8 +3,8 @@ package com.dauphine.eventmanagement.services;
 import com.dauphine.eventmanagement.dto.CredentialsDTO;
 import com.dauphine.eventmanagement.dto.SignUpDTO;
 import com.dauphine.eventmanagement.dto.UserDTO;
-import com.dauphine.eventmanagement.exceptions.IncorrectPasswordException;
-import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.IncorrectPasswordException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
 import java.util.UUID;
 
 public interface UserService {

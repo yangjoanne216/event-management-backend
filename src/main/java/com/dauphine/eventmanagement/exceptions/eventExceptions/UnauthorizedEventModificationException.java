@@ -1,4 +1,4 @@
-package com.dauphine.eventmanagement.exceptions;
+package com.dauphine.eventmanagement.exceptions.eventExceptions;
 
 public class UnauthorizedEventModificationException extends RuntimeException {
 

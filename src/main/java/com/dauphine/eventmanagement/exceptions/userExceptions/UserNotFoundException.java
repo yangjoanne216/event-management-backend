@@ -1,4 +1,4 @@
-package com.dauphine.eventmanagement.exceptions;
+package com.dauphine.eventmanagement.exceptions.userExceptions;
 
 import java.util.UUID;
 
