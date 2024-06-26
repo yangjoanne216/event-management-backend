@@ -57,17 +57,17 @@ public class ParticipationController {
     return ResponseEntity.ok("Participation registered successfully.");
   }
 
-  @DeleteMapping("/cancel")
+  @DeleteMapping("/{idEvent}")
   @Operation(
-      summary = "current user Cancels participation in an event",
+      summary = "Current user cancels participation in an event",
       description = "Cancels the user's registration for the specified event by their IDs."
   )
   public ResponseEntity<String> cancelMyParticipation(
-      @Parameter(description = "id of event") @RequestParam UUID id_event)
+      @Parameter(description = "id of event") @PathVariable UUID idEvent)
       throws NotParticipantException, EventTimePastException {
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
-    participationService.cancelParticipation(idUser, id_event);
+    participationService.cancelParticipation(idUser, idEvent);
     return ResponseEntity.ok("Participation cancelled successfully.");
   }
 
