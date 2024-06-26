@@ -177,7 +177,7 @@ public class EventServiceImpl implements EventService {
   public void deleteMyEvent(UUID idEvent)
       throws EventNotFoundException, UnauthorizedEventModificationException {
     // check event is null or not
-    Event event = eventRepository.findById(idEvent)
+    Event event = eventRepository.findByIdEvent(idEvent)
         .orElseThrow(() -> new EventNotFoundException(idEvent));
     // check event is in the pas or not
     if (event.getStartTime().isBefore(LocalDateTime.now())) {

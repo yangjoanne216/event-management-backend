@@ -40,7 +40,7 @@ public class ParticipationServiceImpl implements ParticipationService {
     User user = userRepository.findById(idUser)
         .orElseThrow(() -> new UserNotFoundException(idUser));
     //When we can't find evnet
-    Event event = eventRepository.findById(idEvent)
+    Event event = eventRepository.findByIdEvent(idEvent)
         .orElseThrow(() -> new EventNotFoundException(idEvent));
     //when event in the past Time
     if (event.getEndTime().isBefore(LocalDateTime.now())) {
