@@ -3,6 +3,11 @@ package com.dauphine.eventmanagement.controllers;
 import com.dauphine.eventmanagement.dto.FeedbackDTO;
 import com.dauphine.eventmanagement.dto.FeedbackRequest;
 import com.dauphine.eventmanagement.dto.FeedbackUpdateRequest;
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.FeedbackAlreadyExistsException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackAccessException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackDeletionException;
 import com.dauphine.eventmanagement.mapper.FeedbackDTOMapper;
 import com.dauphine.eventmanagement.services.FeedbackService;
 import com.dauphine.eventmanagement.services.UserService;
@@ -11,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,46 +45,50 @@ public class FeedbackController {
 
   @GetMapping("/event/{idEvent}")
   @Operation(summary = "Get all feedback for an event", description = "Retrieves all feedback entries submitted for a specific event.")
-  public List<FeedbackDTO> getAllFeedbackForEvent(
+  public ResponseEntity<List<FeedbackDTO>> getAllFeedbackForEvent(
       @PathVariable UUID idEvent) {
-    return feedbackService.getAllFeedbackByEventId(idEvent).stream().map(feedbackDTOMapper::apply)
-        .collect(Collectors.toList());
+    return ResponseEntity.ok(
+        feedbackService.getAllFeedbackByEventId(idEvent).stream().map(feedbackDTOMapper::apply)
+            .collect(Collectors.toList()));
   }
 
   @PostMapping
-  @Operation(summary = "Create feedback", description = "Submits feedback for an event by a user.")
-  public FeedbackDTO createFeedback(
-      @RequestBody FeedbackRequest feedbackRequest) {
-    // 获取当前认证信息
+  @Operation(summary = "Create feedback", description = "Submits feedback for an event by current user.")
+  public ResponseEntity<FeedbackDTO> createMyFeedback(
+      @RequestBody FeedbackRequest feedbackRequest)
+      throws UserNotFoundException, EventNotFoundException, UnauthorizedFeedbackAccessException, FeedbackAlreadyExistsException {
+    // get currentUser information
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
-    return feedbackDTOMapper.apply(
-        feedbackService.createFeedback(idUser, feedbackRequest.getIdEvent(),
-            feedbackRequest.getContent(), feedbackRequest.getScore()));
+    return ResponseEntity.ok(feedbackDTOMapper.apply(
+        feedbackService.createMyFeedback(idUser, feedbackRequest.getIdEvent(),
+            feedbackRequest.getContent(), feedbackRequest.getScore())));
   }
 
   @PutMapping("/{idEvent}")
   @Operation(summary = "Update existing feedback", description = "Updates the feedback submitted by a user for an event.")
-  public FeedbackDTO updateFeedback(
+  public FeedbackDTO updateMyFeedback(
       @PathVariable UUID idEvent,
-      @RequestBody FeedbackUpdateRequest feedbackUpdateRequest) {
-    // 获取当前认证信息
+      @RequestBody FeedbackUpdateRequest feedbackUpdateRequest)
+      throws UserNotFoundException, UnauthorizedFeedbackAccessException, FeedbackAlreadyExistsException {
+    // get current user information
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
     return feedbackDTOMapper.apply(
-        feedbackService.updateFeedback(idEvent, idUser, feedbackUpdateRequest.getContent(),
+        feedbackService.updateMyFeedback(idEvent, idUser, feedbackUpdateRequest.getContent(),
             feedbackUpdateRequest.getScore()));
   }
 
   @DeleteMapping("/{idEvent}")
   @Operation(summary = "Delete feedback", description = "Deletes a specific feedback entry for an event.Only the autor can do that")
-  public void deleteFeedback(
-      @PathVariable UUID idEvent
-  ) {
-    // 获取当前认证信息
+  public ResponseEntity<String> deleteMyFeedback(
+      @PathVariable UUID idEvent)
+      throws UnauthorizedFeedbackDeletionException {
+    //get current user information
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
-    feedbackService.deleteFeedback(idEvent, idUser);
+    feedbackService.deleteMyFeedback(idEvent, idUser);
+    return ResponseEntity.ok(" Feedback deleted successfully");
   }
 
 

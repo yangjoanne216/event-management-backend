@@ -1,16 +1,24 @@
 package com.dauphine.eventmanagement.services;
 
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.FeedbackAlreadyExistsException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackAccessException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackDeletionException;
 import com.dauphine.eventmanagement.models.Feedback;
 import java.util.List;
 import java.util.UUID;
 
 public interface FeedbackService {
 
-  Feedback updateFeedback(UUID eventId, UUID userId, String content, Integer score);
-
-  void deleteFeedback(UUID eventId, UUID userId);
-
   List<Feedback> getAllFeedbackByEventId(UUID eventId);
 
-  Feedback createFeedback(UUID idUser, UUID idEvent, String content, Integer score);
+  Feedback updateMyFeedback(UUID eventId, UUID userId, String content, Integer score)
+      throws UserNotFoundException, UnauthorizedFeedbackAccessException, FeedbackAlreadyExistsException;
+
+  void deleteMyFeedback(UUID eventId, UUID userId)
+      throws UnauthorizedFeedbackDeletionException;
+
+  Feedback createMyFeedback(UUID idUser, UUID idEvent, String content, Integer score)
+      throws UserNotFoundException, EventNotFoundException, UnauthorizedFeedbackAccessException, FeedbackAlreadyExistsException;
 }

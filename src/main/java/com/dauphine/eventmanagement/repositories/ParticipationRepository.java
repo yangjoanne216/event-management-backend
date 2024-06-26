@@ -20,4 +20,5 @@ public interface ParticipationRepository extends JpaRepository<Participation, Id
   List<Event> findEventsByIdIdUser(UUID idUser);
 
 
+  boolean existsByIdIdEventAndIdIdUser(UUID idEvent, UUID idUser);
 }

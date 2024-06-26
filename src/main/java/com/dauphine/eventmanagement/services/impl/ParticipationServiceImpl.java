@@ -1,5 +1,10 @@
 package com.dauphine.eventmanagement.services.impl;
 
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.participationExceptions.NotParticipantException;
+import com.dauphine.eventmanagement.exceptions.participationExceptions.SelfOrganizedEventException;
 import com.dauphine.eventmanagement.models.Event;
 import com.dauphine.eventmanagement.models.IdParticipation;
 import com.dauphine.eventmanagement.models.Participation;
@@ -8,6 +13,7 @@ import com.dauphine.eventmanagement.repositories.EventRepository;
 import com.dauphine.eventmanagement.repositories.ParticipationRepository;
 import com.dauphine.eventmanagement.repositories.UserRepository;
 import com.dauphine.eventmanagement.services.ParticipationService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -27,21 +33,27 @@ public class ParticipationServiceImpl implements ParticipationService {
   }
 
   @Override
-  public void participate(UUID idUser, UUID idEvent) {
-    //Todo:Exception
-    Participation participation = new Participation();
-    Event event = eventRepository.findById(idEvent).orElse(null);
-    User user = userRepository.findById(idUser).orElse(null);
+  public void participate(UUID idUser, UUID idEvent)
+      throws UserNotFoundException, EventNotFoundException, EventTimePastException, SelfOrganizedEventException {
+
+    //when we can't find user
+    User user = userRepository.findById(idUser)
+        .orElseThrow(() -> new UserNotFoundException(idUser));
+    //When we can't find evnet
+    Event event = eventRepository.findById(idEvent)
+        .orElseThrow(() -> new EventNotFoundException(idEvent));
+    //when event in the past Time
+    if (event.getEndTime().isBefore(LocalDateTime.now())) {
+      throw new EventTimePastException();
+    }
+    //when user is a organizer of an event
+    if (event.getOrganizer().getIdUser().equals(idUser)) {
+      throw new SelfOrganizedEventException();
+    }
+
     IdParticipation idParticipation = new IdParticipation(idEvent, idUser);
-    if (user == null && user == null) {
-      throw new IllegalStateException("Event and User not found!");
-    }
-    if (event == null) {
-      throw new IllegalStateException("Event not found!");
-    }
-    if (user == null) {
-      throw new IllegalStateException("User not found!");
-    }
+
+    Participation participation = new Participation();
     participation.setEvent(event);
     participation.setUser(user);
     participation.setId(idParticipation);
@@ -51,14 +63,25 @@ public class ParticipationServiceImpl implements ParticipationService {
   }
 
   @Override
-  public void cancelParticipation(UUID idUser, UUID idEvent) {
-    //Todo throw exception when id_event et id_user ne trouve pas
-    participationRepository.deleteByIdIdEventAndIdIdUser(idEvent, idUser);
+  public void cancelParticipation(UUID idUser, UUID idEvent)
+      throws NotParticipantException, EventTimePastException {
+
+    Participation participation = participationRepository.findById(
+            new IdParticipation(idEvent, idUser))
+        .orElseThrow(() -> new NotParticipantException());
+
+    if (participation.getEvent().getEndTime().isBefore(LocalDateTime.now())) {
+      throw new EventTimePastException();
+    }
+    participationRepository.delete(participation);
   }
 
 
   @Override
-  public List<User> getParticipants(UUID idEvent) {
+  public List<User> getParticipants(UUID idEvent) throws EventNotFoundException {
+    if (!eventRepository.existsById(idEvent)) {
+      throw new EventNotFoundException(idEvent);
+    }
     return participationRepository.findParticipantsByEventId(idEvent);
   }
 }

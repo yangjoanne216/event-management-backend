@@ -11,6 +11,12 @@ import com.dauphine.eventmanagement.exceptions.InvalidLocationTypeException;
 import com.dauphine.eventmanagement.exceptions.LocationNotFoundException;
 import com.dauphine.eventmanagement.exceptions.UnauthorizedEventModificationException;
 import com.dauphine.eventmanagement.exceptions.UserNotFoundException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.FeedbackAlreadyExistsException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.FeedbackForFutureEventException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackAccessException;
+import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackDeletionException;
+import com.dauphine.eventmanagement.exceptions.participationExceptions.NotParticipantException;
+import com.dauphine.eventmanagement.exceptions.participationExceptions.SelfOrganizedEventException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -44,7 +50,10 @@ public class GlobalDefaultExceptionHandler {
   @ExceptionHandler({
       InvalidDateException.class,
       InvalidEventTypeException.class,
-      InvalidLocationTypeException.class
+      InvalidLocationTypeException.class,
+      FeedbackForFutureEventException.class,
+      NotParticipantException.class,
+      SelfOrganizedEventException.class
   })
   public ResponseEntity<String> handleBadRequestException(RuntimeException ex, WebRequest request) {
     logger.error("Bad request: {}", ex.getMessage());
@@ -53,7 +62,10 @@ public class GlobalDefaultExceptionHandler {
 
   @ExceptionHandler({
       UnauthorizedEventModificationException.class,
-      IncorrectPasswordException.class
+      IncorrectPasswordException.class,
+      UnauthorizedFeedbackAccessException.class,
+      FeedbackAlreadyExistsException.class,
+      UnauthorizedFeedbackDeletionException.class
   })
   public ResponseEntity<String> handleUnauthorizedException(
       UnauthorizedEventModificationException ex, WebRequest request) {

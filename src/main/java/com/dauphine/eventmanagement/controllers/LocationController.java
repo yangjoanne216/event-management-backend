@@ -5,6 +5,7 @@ import com.dauphine.eventmanagement.services.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +29,8 @@ public class LocationController {
       summary = "Retrieve all locations",
       description = "Fetches a list of all locations where events can be held."
   )
-  public List<Location> getAllLocations() {
+  public ResponseEntity<List<Location>> getAllLocations() {
     List<Location> locations = locationService.getAllLocations();
-    return locations;
+    return ResponseEntity.ok(locations);
   }
 }

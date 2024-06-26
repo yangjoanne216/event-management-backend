@@ -64,7 +64,7 @@ public class AuthController {
     return ResponseEntity.ok(updatedUser);
   }
 
-  @PutMapping("/updatePassword")
+  @PutMapping("/updateMyPassword")
   @Operation(summary = "Update user password", description = "Updates the password of the currently authenticated user.")
   public ResponseEntity<String> updateMyPassword(@RequestParam String oldPassword,
       @RequestParam String newPassword)

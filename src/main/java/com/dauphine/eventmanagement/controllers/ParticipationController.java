@@ -1,6 +1,9 @@
 package com.dauphine.eventmanagement.controllers;
 
 import com.dauphine.eventmanagement.dto.UserDTO;
+import com.dauphine.eventmanagement.exceptions.EventNotFoundException;
+import com.dauphine.eventmanagement.exceptions.EventTimePastException;
+import com.dauphine.eventmanagement.exceptions.participationExceptions.NotParticipantException;
 import com.dauphine.eventmanagement.mapper.UserDTOMapper;
 import com.dauphine.eventmanagement.models.User;
 import com.dauphine.eventmanagement.services.ParticipationService;
@@ -11,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,27 +48,28 @@ public class ParticipationController {
       summary = "Current user participates in an event",
       description = "Registers the user for the specified event by their IDs."
   )
-  public String participate(
-      @Parameter(description = "id of event") @RequestParam UUID idEvent) {
-    // 获取当前认证信息
+  public ResponseEntity<String> participate(
+      @Parameter(description = "id of event") @RequestParam UUID idEvent)
+      throws NotParticipantException, EventTimePastException {
+    // getCurrent User Information
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
     participationService.participate(idUser, idEvent);
-    return "Participation registered successfully.";
+    return ResponseEntity.ok("Participation registered successfully.");
   }
 
   @DeleteMapping("/cancel")
   @Operation(
-      summary = "Cancel participation in an event",
+      summary = "current user Cancels participation in an event",
       description = "Cancels the user's registration for the specified event by their IDs."
   )
-  public String cancelMyParticipation(
-      @Parameter(description = "id of event") @RequestParam UUID id_event) {
-    //不能取消已经时间超过今天的event
+  public ResponseEntity<String> cancelMyParticipation(
+      @Parameter(description = "id of event") @RequestParam UUID id_event)
+      throws NotParticipantException, EventTimePastException {
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
     participationService.cancelParticipation(idUser, id_event);
-    return "Participation cancelled successfully.";
+    return ResponseEntity.ok("Participation cancelled successfully.");
   }
 
   @GetMapping("/participants/{idEvent}")
@@ -72,12 +77,12 @@ public class ParticipationController {
       summary = "Get all participants of an event",
       description = "Retrieves a list of all participants registered for the specified event."
   )
-  public List<UserDTO> getParticipants(
-      @Parameter(description = "id of event") @PathVariable UUID idEvent) {
-    //Todo Exception pas de id of event
+  public ResponseEntity<List<UserDTO>> getParticipants(
+      @Parameter(description = "id of event") @PathVariable UUID idEvent)
+      throws EventNotFoundException {
     List<User> participants = participationService.getParticipants(idEvent);
-    return participants.stream().map(userDTOMapper::apply)
-        .collect(Collectors.toList());
+    return ResponseEntity.ok(participants.stream().map(userDTOMapper::apply)
+        .collect(Collectors.toList()));
   }
 }
 

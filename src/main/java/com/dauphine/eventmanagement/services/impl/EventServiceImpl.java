@@ -112,10 +112,12 @@ public class EventServiceImpl implements EventService {
       LocalDateTime startTime, LocalDateTime endTime, UUID idTypeEvent, String typeLocation,
       String image, UUID idLocation)
       throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException {
+    //Event not found Exception
     Event event = eventRepository.findById(idEvent)
         .orElseThrow(() -> new EventNotFoundException(idEvent));
     //get current user information
     String email = userService.getCurrentUserEmail();
+
     // check current user is organizer or not
     if (!event.getOrganizer().getEmail().equals(email)) {
       throw new UnauthorizedEventModificationException(

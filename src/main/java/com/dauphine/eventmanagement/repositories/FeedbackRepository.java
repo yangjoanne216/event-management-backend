@@ -16,4 +16,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback, IdFeedback> 
   boolean existsById(IdFeedback idFeedback);
 
   List<Feedback> findByEvent_IdEvent(UUID idEvent);
+
+
 }
