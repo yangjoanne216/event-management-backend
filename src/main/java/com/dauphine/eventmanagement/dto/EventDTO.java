@@ -21,11 +21,13 @@ public class EventDTO {
 
   private Double score;
 
+  private String image;
+
 
   public EventDTO(UUID idEvent, String title, String description, LocalDateTime startTime,
       LocalDateTime endTime, String typeEventName, String typeLocationName, String locationName,
       UserDTO organizer,
-      List<UserDTO> participants, List<FeedbackDTO> feedbacks, Double score) {
+      List<UserDTO> participants, List<FeedbackDTO> feedbacks, Double score, String image) {
     this.idEvent = idEvent;
     this.title = title;
     this.description = description;
@@ -38,6 +40,7 @@ public class EventDTO {
     this.participants = participants;
     this.feedbacks = feedbacks;
     this.score = score;
+    this.image = image;
   }
 
   public UUID getIdEvent() {
@@ -134,5 +137,13 @@ public class EventDTO {
 
   public void setScore(Double score) {
     this.score = score;
+  }
+
+  public String getImage() {
+    return image;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
   }
 }

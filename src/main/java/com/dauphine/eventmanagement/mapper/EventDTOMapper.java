@@ -33,8 +33,7 @@ public class EventDTOMapper implements Function<Event, EventDTO> {
         event.getTypeEvent().getName(),
         event.getTypeLocation().getName(),
         (event.getLocation() != null ? event.getLocation().getName() : ""),
-        organizer, participants, feedbacks, event.getScore());
-
-
+        organizer, participants, feedbacks, event.getScore(),
+        event.getImage());
   }
 }
