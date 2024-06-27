@@ -10,4 +10,6 @@ public interface TypeEventRepository extends JpaRepository<TypeEvent, UUID> {
   @Override
   Optional<TypeEvent> findById(UUID uuid);
 
+  Optional<TypeEvent> findByName(String name);
+
 }

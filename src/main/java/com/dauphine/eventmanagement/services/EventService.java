@@ -23,14 +23,14 @@ public interface EventService {
   Event findEventById(UUID id_event) throws EventNotFoundException;
 
   Event createMyEvent(String title, String description, LocalDateTime start_time,
-      LocalDateTime end_time, UUID typeEventId, String typeLocation, String image,
-      UUID id_city, UUID id_organizer)
+      LocalDateTime end_time, String typeEventName, String typeLocation, String image,
+      String locationName, UUID id_organizer)
       throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException, InvalidLocationException;
 
   Event updateMyEvent(UUID id_event, String title, String description,
-      LocalDateTime start_time, LocalDateTime end_time, UUID typeEventId, String typeLocation,
+      LocalDateTime start_time, LocalDateTime end_time, String typeEventName, String typeLocation,
       String image,
-      UUID locationId)
+      String locationName)
       throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException;
 
   void deleteMyEvent(UUID id_event)

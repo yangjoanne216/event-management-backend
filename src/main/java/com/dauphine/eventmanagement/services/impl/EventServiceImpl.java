@@ -79,8 +79,8 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public Event createMyEvent(String title, String description, LocalDateTime startTime,
-      LocalDateTime endTime, UUID idTypeEvent, String typeLocation, String image,
-      UUID idLocation, UUID idOrganizer)
+      LocalDateTime endTime, String typeEventName, String typeLocation, String image,
+      String locationName, UUID idOrganizer)
       throws InvalidDateException, EventTypeNotFoundException, UserNotFoundException, LocationNotFoundException, EventTimePastException, InvalidLocationException {
     if (startTime.isBefore(LocalDateTime.now())) {
       throw new EventTimePastException();
@@ -88,21 +88,21 @@ public class EventServiceImpl implements EventService {
     if (endTime.isBefore(startTime)) {
       throw new InvalidDateException();
     }
-    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
-        .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));
+    TypeEvent typeEvent = typeEventRepository.findByName(typeEventName)
+        .orElseThrow(() -> new EventTypeNotFoundException(typeEventName));
 
     Location location = null;
     if ("ONLINE".equals(typeLocation)) {
-      if (idLocation != null) {
+      if (locationName != null) {
         throw new InvalidLocationException();
       }
     } else {
-      if (idLocation == null) {
+      if (locationName == null) {
         throw new InvalidLocationException();
       }
-      location = locationRepository.findById(idLocation)
+      location = locationRepository.findByName(locationName)
           .orElseThrow(
-              () -> new LocationNotFoundException(idLocation));
+              () -> new LocationNotFoundException(locationName));
     }
 
     User user = userRepository.findById(idOrganizer)
@@ -123,8 +123,8 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public Event updateMyEvent(UUID idEvent, String title, String description,
-      LocalDateTime startTime, LocalDateTime endTime, UUID idTypeEvent, String typeLocation,
-      String image, UUID idLocation)
+      LocalDateTime startTime, LocalDateTime endTime, String typeEventName, String typeLocation,
+      String image, String locationName)
       throws UnauthorizedEventModificationException, EventNotFoundException, InvalidDateException, EventTypeNotFoundException, LocationNotFoundException, EventTimePastException {
     //Event not found Exception
     Event event = eventRepository.findByIdEvent(idEvent)
@@ -144,19 +144,20 @@ public class EventServiceImpl implements EventService {
       throw new InvalidDateException();
     }
     //check Location
+    Location location = null;
     if ("ONLINE".equals(typeLocation)) {
-      if (idLocation != null) {
+      if (locationName != null) {
         throw new InvalidLocationException();
       }
     } else {
-      if (idLocation == null) {
+      if (locationName == null) {
         throw new InvalidLocationException();
       }
+      location = locationRepository.findByName(locationName)
+          .orElseThrow(() -> new LocationNotFoundException(locationName));
     }
-    TypeEvent typeEvent = typeEventRepository.findById(idTypeEvent)
-        .orElseThrow(() -> new EventTypeNotFoundException(idTypeEvent));
-    Location location = locationRepository.findById(idLocation)
-        .orElseThrow(() -> new LocationNotFoundException(idLocation));
+    TypeEvent typeEvent = typeEventRepository.findByName(typeEventName)
+        .orElseThrow(() -> new EventTypeNotFoundException(typeEventName));
 
     event.setTitle(title);
     event.setDescription(description);
