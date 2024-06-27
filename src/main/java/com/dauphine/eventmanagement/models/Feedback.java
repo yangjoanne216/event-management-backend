@@ -1,5 +1,6 @@
 package com.dauphine.eventmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -27,6 +28,7 @@ public class Feedback {
   private User user;
 
   @Column(nullable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
 
   @Column(nullable = false, columnDefinition = "TEXT")

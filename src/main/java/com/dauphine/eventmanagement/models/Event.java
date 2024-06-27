@@ -1,5 +1,6 @@
 package com.dauphine.eventmanagement.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,9 +32,11 @@ public class Event {
   private String description;
 
   @Column(nullable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime startTime;
 
   @Column(nullable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime endTime;
 
   @ManyToOne
