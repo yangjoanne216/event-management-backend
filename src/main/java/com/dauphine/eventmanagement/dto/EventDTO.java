@@ -1,5 +1,7 @@
 package com.dauphine.eventmanagement.dto;
 
+import com.dauphine.eventmanagement.models.Location;
+import com.dauphine.eventmanagement.models.TypeEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -11,10 +13,10 @@ public class EventDTO {
   private String description;
   private LocalDateTime startTime;
   private LocalDateTime endTime;
-  private String typeEventName; //getTypEvent().getName()
+  private TypeEvent typeEvent;
   private String typeLocationName; //getTypeLocation().getName()
 
-  private String locationName;
+  private Location location;
   private UserDTO organizer;
   private List<UserDTO> participants;
   private List<FeedbackDTO> feedbacks;
@@ -25,7 +27,7 @@ public class EventDTO {
 
 
   public EventDTO(UUID idEvent, String title, String description, LocalDateTime startTime,
-      LocalDateTime endTime, String typeEventName, String typeLocationName, String locationName,
+      LocalDateTime endTime, TypeEvent typeEvent, String typeLocationName, Location location,
       UserDTO organizer,
       List<UserDTO> participants, List<FeedbackDTO> feedbacks, Double score, String image) {
     this.idEvent = idEvent;
@@ -33,9 +35,9 @@ public class EventDTO {
     this.description = description;
     this.startTime = startTime;
     this.endTime = endTime;
-    this.typeEventName = typeEventName;
+    this.typeEvent = typeEvent;
     this.typeLocationName = typeLocationName;
-    this.locationName = locationName;
+    this.location = location;
     this.organizer = organizer;
     this.participants = participants;
     this.feedbacks = feedbacks;
@@ -83,14 +85,6 @@ public class EventDTO {
     this.endTime = endTime;
   }
 
-  public String getTypeEventName() {
-    return typeEventName;
-  }
-
-  public void setTypeEventName(String typeEventName) {
-    this.typeEventName = typeEventName;
-  }
-
   public String getTypeLocationName() {
     return typeLocationName;
   }
@@ -123,14 +117,6 @@ public class EventDTO {
     this.feedbacks = feedbacks;
   }
 
-  public String getLocationName() {
-    return locationName;
-  }
-
-  public void setLocationName(String locationName) {
-    this.locationName = locationName;
-  }
-
   public Double getScore() {
     return score;
   }
@@ -145,5 +131,21 @@ public class EventDTO {
 
   public void setImage(String image) {
     this.image = image;
+  }
+
+  public TypeEvent getTypeEvent() {
+    return typeEvent;
+  }
+
+  public void setTypeEvent(TypeEvent typeEvent) {
+    this.typeEvent = typeEvent;
+  }
+
+  public Location getLocation() {
+    return location;
+  }
+
+  public void setLocation(Location location) {
+    this.location = location;
   }
 }
