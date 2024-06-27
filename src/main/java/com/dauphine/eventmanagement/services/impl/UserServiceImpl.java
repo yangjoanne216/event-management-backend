@@ -3,6 +3,8 @@ package com.dauphine.eventmanagement.services.impl;
 import com.dauphine.eventmanagement.dto.CredentialsDTO;
 import com.dauphine.eventmanagement.dto.SignUpDTO;
 import com.dauphine.eventmanagement.dto.UserDTO;
+import com.dauphine.eventmanagement.exceptions.userExceptions.AuthenticationException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.EmailAlreadyExistsException;
 import com.dauphine.eventmanagement.exceptions.userExceptions.IncorrectPasswordException;
 import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
 import com.dauphine.eventmanagement.mapper.UserDTOMapper;
@@ -15,7 +17,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,25 +29,24 @@ public class UserServiceImpl implements UserService {
   private final UserDTOMapper userMapper;
 
 
-  public UserDTO login(CredentialsDTO credentialsDTO) {
+  public UserDTO login(CredentialsDTO credentialsDTO) throws AuthenticationException {
     User user = userRepository.findByEmail(credentialsDTO.email())
-        .orElseThrow(() -> new RuntimeException("Unknown user"));
+        .orElseThrow(() -> new AuthenticationException("Unknown user"));
 
     if (passwordEncoder.matches(CharBuffer.wrap(credentialsDTO.password()),
         user.getPassword())) {
       return userMapper.apply(user);
     }
-    throw new RuntimeException("Invalid password");
+    throw new AuthenticationException("Invalid password");
   }
 
 
-  public UserDTO register(SignUpDTO userDto) {
-    Optional<User> optionalUser = userRepository.findByEmail(userDto.email());
-
+  public UserDTO register(SignUpDTO userDto) throws EmailAlreadyExistsException {
+    String email = userDto.email();
+    Optional<User> optionalUser = userRepository.findByEmail(email);
     if (optionalUser.isPresent()) {
-      throw new RuntimeException("Login already exists");
+      throw new EmailAlreadyExistsException(email);
     }
-
     User user = userMapper.signUpToUser(userDto);
     user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.password())));
 
@@ -55,22 +55,22 @@ public class UserServiceImpl implements UserService {
     return userMapper.apply(savedUser);
   }
 
-  public String getCurrentUserEmail() {
+  public String getCurrentUserEmail() throws AuthenticationException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null && authentication.getPrincipal() instanceof UserDTO) {
       UserDTO user = (UserDTO) authentication.getPrincipal();
       return user.getEmail();
     }
-    throw new IllegalStateException("User is not authenticated");
+    throw new AuthenticationException("User is not authenticated.");
   }
 
   //get id of user by email
-  public UUID getIdUserByEmail(String email) {
+  public UUID getIdUserByEmail(String email) throws UserNotFoundException {
     Optional<User> user = userRepository.findByEmail(email);
     if (user.isPresent()) {
       return user.get().getIdUser();
     } else {
-      throw new UsernameNotFoundException("User not found with email: " + email);
+      throw new UserNotFoundException("User not found: " + email);
     }
   }
 
@@ -102,4 +102,11 @@ public class UserServiceImpl implements UserService {
     userRepository.save(user);
   }
 
+  public UserDTO getCurrentUser() throws AuthenticationException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = ((UserDTO) authentication.getPrincipal()).getEmail();
+    User user = userRepository.findByEmail(email).orElseThrow(() ->
+        new AuthenticationException("User not found with email: " + email));
+    return new UserDTO(user.getEmail(), user.getFirstname(), user.getLastname(), user.getAvatar());
+  }
 }
