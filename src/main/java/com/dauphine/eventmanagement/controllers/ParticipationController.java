@@ -1,5 +1,6 @@
 package com.dauphine.eventmanagement.controllers;
 
+import com.dauphine.eventmanagement.dto.ParticipateEventRequest;
 import com.dauphine.eventmanagement.dto.UserDTO;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventNotFoundException;
 import com.dauphine.eventmanagement.exceptions.eventExceptions.EventTimePastException;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,16 +49,16 @@ public class ParticipationController {
       description = "Registers the user for the specified event by their IDs."
   )
   public ResponseEntity<String> participate(
-      @Parameter(description = "id of event") @RequestParam UUID idEvent)
+      @Parameter(description = "id of event") @RequestBody ParticipateEventRequest participateEventRequest)
       throws NotParticipantException, EventTimePastException {
     // getCurrent User Information
     String email = userService.getCurrentUserEmail();
     UUID idUser = userService.getIdUserByEmail(email);
-    participationService.participate(idUser, idEvent);
+    participationService.participate(idUser, participateEventRequest.getIdEvent());
     return ResponseEntity.ok("Participation registered successfully.");
   }
 
-  @DeleteMapping("/{idEvent}")
+  @DeleteMapping("/cancel/{idEvent}")
   @Operation(
       summary = "Current user cancels participation in an event",
       description = "Cancels the user's registration for the specified event by their IDs."
