@@ -1,7 +1,6 @@
 package com.dauphine.eventmanagement.dto;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class EventRequest {
 
@@ -9,10 +8,10 @@ public class EventRequest {
   private String description;
   private LocalDateTime startTime;
   private LocalDateTime endTime;
-  private UUID typeEventId;
+  private String typeEventName;
   private String typeLocation;
   private String image;
-  private UUID locationId;
+  private String locationName;
 
 
   public String getTitle() {
@@ -47,13 +46,6 @@ public class EventRequest {
     this.endTime = endTime;
   }
 
-  public UUID getTypeEventId() {
-    return typeEventId;
-  }
-
-  public void setTypeEventId(UUID typeEventId) {
-    this.typeEventId = typeEventId;
-  }
 
   public String getTypeLocation() {
     return typeLocation;
@@ -71,11 +63,19 @@ public class EventRequest {
     this.image = image;
   }
 
-  public UUID getLocationId() {
-    return locationId;
+  public String getTypeEventName() {
+    return typeEventName;
   }
 
-  public void setLocationId(UUID locationId) {
-    this.locationId = locationId;
+  public void setTypeEventName(String typeEventName) {
+    this.typeEventName = typeEventName;
+  }
+
+  public String getLocationName() {
+    return locationName;
+  }
+
+  public void setLocationName(String locationName) {
+    this.locationName = locationName;
   }
 }

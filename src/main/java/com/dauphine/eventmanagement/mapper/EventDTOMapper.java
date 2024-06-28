@@ -30,11 +30,10 @@ public class EventDTOMapper implements Function<Event, EventDTO> {
         event.getDescription(),
         event.getStartTime(),
         event.getEndTime(),
-        event.getTypeEvent().getName(),
+        event.getTypeEvent(),
         event.getTypeLocation().getName(),
-        (event.getLocation() != null ? event.getLocation().getName() : ""),
-        organizer, participants, feedbacks, event.getScore());
-
-
+        event.getLocation(),
+        organizer, participants, feedbacks, event.getScore(),
+        event.getImage());
   }
 }

@@ -16,6 +16,8 @@ import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFe
 import com.dauphine.eventmanagement.exceptions.feedbackExceptions.UnauthorizedFeedbackDeletionException;
 import com.dauphine.eventmanagement.exceptions.participationExceptions.NotParticipantException;
 import com.dauphine.eventmanagement.exceptions.participationExceptions.SelfOrganizedEventException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.AuthenticationException;
+import com.dauphine.eventmanagement.exceptions.userExceptions.EmailAlreadyExistsException;
 import com.dauphine.eventmanagement.exceptions.userExceptions.IncorrectPasswordException;
 import com.dauphine.eventmanagement.exceptions.userExceptions.UserNotFoundException;
 import org.slf4j.Logger;
@@ -68,12 +70,13 @@ public class GlobalDefaultExceptionHandler {
       IncorrectPasswordException.class,
       UnauthorizedFeedbackAccessException.class,
       FeedbackAlreadyExistsException.class,
-      UnauthorizedFeedbackDeletionException.class
+      UnauthorizedFeedbackDeletionException.class,
+      AuthenticationException.class
   })
   public ResponseEntity<String> handleUnauthorizedException(
       UnauthorizedEventModificationException ex, WebRequest request) {
     logger.error("Unauthorized: {}", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
   }
 
   @ExceptionHandler(EventTimePastException.class)
@@ -83,10 +86,19 @@ public class GlobalDefaultExceptionHandler {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
   }
 
+  @ExceptionHandler(EmailAlreadyExistsException.class)
+  public ResponseEntity<String> handleConflitException(Exception ex, WebRequest request) {
+    logger.error("An error occurred: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(ex.getMessage());
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleGeneralException(Exception ex, WebRequest request) {
     logger.error("An error occurred: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body("An unexpected error occurred: " + ex.getMessage());
   }
+
+
 }

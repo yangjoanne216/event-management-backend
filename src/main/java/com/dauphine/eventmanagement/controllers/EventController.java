@@ -149,10 +149,10 @@ public class EventController {
         eventRequest.getDescription(),
         eventRequest.getStartTime(),
         eventRequest.getEndTime(),
-        eventRequest.getTypeEventId(),
+        eventRequest.getTypeEventName(),
         eventRequest.getTypeLocation(),
         eventRequest.getImage(),
-        eventRequest.getLocationId(),
+        eventRequest.getLocationName(),
         idOrganizer
     ));
     return ResponseEntity.ok(event);
@@ -172,10 +172,10 @@ public class EventController {
         eventRequest.getDescription(),
         eventRequest.getStartTime(),
         eventRequest.getEndTime(),
-        eventRequest.getTypeEventId(),
+        eventRequest.getTypeEventName(),
         eventRequest.getTypeLocation(),
         eventRequest.getImage(),
-        eventRequest.getLocationId())));
+        eventRequest.getLocationName())));
   }
 
   @DeleteMapping("/{idEvent}")
