@@ -226,8 +226,11 @@ public class EventController {
     SearchCriteria criteria = new SearchCriteria(eventTypes, startDate, endDate, cities,
         locationTypes);
     List<Event> events = eventService.searchEvents(criteria, orderBy);
-    events.sort(
-        Comparator.comparing(Event::getScore, Comparator.nullsLast(Double::compareTo)).reversed());
+    if ("score".equalsIgnoreCase(orderBy)) {
+      events.sort(
+          Comparator.comparing(Event::getScore, Comparator.nullsLast(Double::compareTo))
+              .reversed());
+    }
     List<EventDTO> eventDTOs = events.stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
     return ResponseEntity.ok(eventDTOs);

@@ -16,7 +16,7 @@ public class SwaggerConfig {
     return new OpenAPI()
         .info(new Info().title("API Documentation").version("1.0"))
         .components(new Components()
-            .addSecuritySchemes("bearerAuth", // 注意这里的Key就是下面要用到的
+            .addSecuritySchemes("bearerAuth",
                 new SecurityScheme()
                     .type(SecurityScheme.Type.HTTP)
                     .scheme("bearer")
