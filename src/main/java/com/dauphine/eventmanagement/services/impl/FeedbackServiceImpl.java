@@ -110,10 +110,6 @@ public class FeedbackServiceImpl implements FeedbackService {
     if (!feedback.getUser().getIdUser().equals(currentUser.getIdUser())) {
       throw new UnauthorizedFeedbackDeletionException();
     }
-
-    if (!feedback.getUser().getIdUser().equals(currentUser.getIdUser())) {
-      throw new UnauthorizedFeedbackDeletionException();
-    }
     feedbackRepository.deleteById(id);
   }
 
