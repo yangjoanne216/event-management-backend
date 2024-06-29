@@ -1,12 +1,12 @@
 -- Drop tables if they exist
-DROP TABLE IF EXISTS participation;
-DROP TABLE IF EXISTS feedback;
-DROP TABLE IF EXISTS event;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS type_event;
-DROP TABLE IF EXISTS location;
-DROP TABLE IF EXISTS typeEvent;
-DROP TYPE if exists TYPELOCATION;
+-- DROP TABLE IF EXISTS participation;
+-- DROP TABLE IF EXISTS feedback;
+-- DROP TABLE IF EXISTS event;
+-- DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS type_event;
+-- DROP TABLE IF EXISTS location;
+-- DROP TABLE IF EXISTS typeEvent;
+-- DROP TYPE if exists TYPELOCATION;
 CREATE TYPE TYPELOCATION AS ENUM ('ONLINE', 'ONSITE', 'HYBRID');
 
 CREATE TABLE type_event
@@ -125,7 +125,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 创建触发器：防止组织者参加自己创建的事件
-CREATE OR REPLACE FUNCTION event_organizer_participation()
+CREATE OR REPLACE FUNCTION prevent_organizer_participation()
     RETURNS TRIGGER AS
 $$
 BEGIN
