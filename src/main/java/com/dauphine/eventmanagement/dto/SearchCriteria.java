@@ -10,16 +10,15 @@ public class SearchCriteria {
   private LocalDateTime endDate;
   private List<String> cities;
   private List<String> locationTypes;
-  private String orderBy;
+
 
   public SearchCriteria(List<String> eventTypes, LocalDateTime startDate, LocalDateTime endDate,
-      List<String> cities, List<String> locationTypes, String orderBy) {
+      List<String> cities, List<String> locationTypes) {
     this.eventTypes = eventTypes;
     this.startDate = startDate;
     this.endDate = endDate;
     this.cities = cities;
     this.locationTypes = locationTypes;
-    this.orderBy = orderBy;
   }
 
   public List<String> getEventTypes() {
@@ -62,11 +61,5 @@ public class SearchCriteria {
     this.locationTypes = locationTypes;
   }
 
-  public String getOrderBy() {
-    return orderBy;
-  }
 
-  public void setOrderBy(String orderBy) {
-    this.orderBy = orderBy;
-  }
 }

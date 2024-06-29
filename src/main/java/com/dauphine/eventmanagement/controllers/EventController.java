@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -215,15 +216,18 @@ public class EventController {
 
   /*orderBy：date date*/
   @GetMapping("/search")
-  public ResponseEntity<List<EventDTO>> searchEvents(@RequestParam List<String> eventTypes,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-      @RequestParam List<String> cities,
-      @RequestParam List<String> locationTypes,
-      @RequestParam String orderBy) {
+  public ResponseEntity<List<EventDTO>> searchEvents(
+      @RequestParam(required = false) List<String> eventTypes,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+      @RequestParam(required = false) List<String> cities,
+      @RequestParam(required = false) List<String> locationTypes,
+      @RequestParam(required = false, defaultValue = "startTime") String orderBy) {
     SearchCriteria criteria = new SearchCriteria(eventTypes, startDate, endDate, cities,
-        locationTypes, orderBy);
-    List<Event> events = eventService.searchEvents(criteria);
+        locationTypes);
+    List<Event> events = eventService.searchEvents(criteria, orderBy);
+    events.sort(
+        Comparator.comparing(Event::getScore, Comparator.nullsLast(Double::compareTo)).reversed());
     List<EventDTO> eventDTOs = events.stream().map(eventDTOMapper::apply)
         .collect(Collectors.toList());
     return ResponseEntity.ok(eventDTOs);

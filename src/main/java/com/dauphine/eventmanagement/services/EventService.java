@@ -50,6 +50,6 @@ public interface EventService {
 
   List<Event> findAllMyEventsByUserEmail(String email);
 
-  List<Event> searchEvents(SearchCriteria criteria);
+  List<Event> searchEvents(SearchCriteria criteria, String orderBy);
 
 }

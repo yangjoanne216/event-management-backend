@@ -240,11 +240,15 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public List<Event> searchEvents(SearchCriteria criteria) {
+  public List<Event> searchEvents(SearchCriteria criteria, String orderBy) {
     Specification<Event> spec = new EventSpecification(criteria);
-    Sort sort = Sort.by(
-        Sort.Direction.DESC,
-        criteria.getOrderBy().equals("score") ? "score" : "startTime");
+    Sort sort;
+    if ("score".equalsIgnoreCase(orderBy)) {
+      sort = Sort.by(Sort.Order.desc("score").nullsLast());
+    } else {
+      sort = Sort.by(Sort.Order.desc("startTime"));
+    }
+
     return eventRepository.findAll(spec, sort);
   }
 
