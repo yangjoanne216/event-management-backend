@@ -144,6 +144,6 @@ CREATE TRIGGER prevent_organizer_participation_trigger
 EXECUTE FUNCTION prevent_organizer_participation();
 
 
-DROP TRIGGER IF EXISTS trg_check_feedback_date ON feedback CASCADE;
+
 
 
